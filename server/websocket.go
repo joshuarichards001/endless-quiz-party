@@ -16,7 +16,7 @@ var upgrader = websocket.Upgrader{
 		origin := r.Header.Get("Origin")
 		environment := os.Getenv("ENVIRONMENT")
 		if environment == "development" {
-			return origin == "http://127.0.0.1:3000"
+			return origin == "http://localhost:3000"
 		} else {
 			return origin == "https://endlessquiz.party"
 		}
@@ -43,7 +43,7 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		quiz, err := fetchGeminiQuestion()
+		quiz, err := fetchQuestion()
 		if err != nil {
 			log.Println("Error fetching Gemini question:", err)
 			continue
