@@ -12,7 +12,6 @@ import (
 	"strings"
 )
 
-// GeminiAPIResponse is the structure for the response from the Gemini API
 type GeminiAPIResponse struct {
 	Candidates []struct {
 		Content struct {
@@ -23,18 +22,15 @@ type GeminiAPIResponse struct {
 	} `json:"candidates"`
 }
 
-// cleanCodeBlock removes Markdown code block markers from a string.
 func cleanCodeBlock(s string) string {
 	re := regexp.MustCompile("(?s)```[a-zA-Z]*\\n(.*)\\n```")
 	matches := re.FindStringSubmatch(s)
 	if len(matches) > 1 {
 		return matches[1]
 	}
-	// Remove single-line backticks if present
 	return strings.Trim(s, "`")
 }
 
-// getGeminiAPIKey loads the Gemini API key from the environment
 func getGeminiAPIKey() (string, error) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
@@ -43,7 +39,6 @@ func getGeminiAPIKey() (string, error) {
 	return apiKey, nil
 }
 
-// fetchGeminiQuestion fetches a new question from the Gemini API
 func fetchGeminiQuestion() (*QuizQuestion, error) {
 	apiKey, err := getGeminiAPIKey()
 	if err != nil {
@@ -83,7 +78,6 @@ func fetchGeminiQuestion() (*QuizQuestion, error) {
 		return nil, fmt.Errorf("invalid Gemini API response: missing candidates or parts")
 	}
 
-	// The response text should be a JSON object for a question
 	questionText := geminiResp.Candidates[0].Content.Parts[0].Text
 	questionText = cleanCodeBlock(questionText)
 	var q struct {
@@ -96,7 +90,6 @@ func fetchGeminiQuestion() (*QuizQuestion, error) {
 		return nil, fmt.Errorf("could not parse question JSON: %v", err)
 	}
 
-	// Find the answer index
 	answerIdx := -1
 	for i, opt := range q.Options {
 		if opt == q.Answer {
