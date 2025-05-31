@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
@@ -34,6 +35,14 @@ func fetchQuestion() (*QuizQuestion, error) {
 		return nil, err
 	}
 
+	var catKeys []string
+	for k := range categories {
+		catKeys = append(catKeys, k)
+	}
+	category := catKeys[rand.Intn(len(catKeys))]
+	subcats := categories[category]
+	subcategory := subcats[rand.Intn(len(subcats))]
+
 	url := "https://api.openai.com/v1/chat/completions"
 
 	systemPromptBytes, err := os.ReadFile("system_prompt.txt")
@@ -41,13 +50,15 @@ func fetchQuestion() (*QuizQuestion, error) {
 		return nil, fmt.Errorf("failed to read system_prompt.txt: %v", err)
 	}
 	systemPrompt := string(systemPromptBytes)
+	userPrompt := fmt.Sprintf("Generate a new question in the category '%s' and sub-category '%s'.", category, subcategory)
 
 	requestBody := map[string]interface{}{
 		"model": "gpt-4.1-mini",
 		"messages": []map[string]string{
 			{"role": "system", "content": systemPrompt},
-			{"role": "user", "content": "Generate a new question"},
+			{"role": "user", "content": userPrompt},
 		},
+		"temperature": 0.7,
 	}
 
 	jsonBody, _ := json.Marshal(requestBody)
