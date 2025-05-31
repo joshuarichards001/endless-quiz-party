@@ -45,7 +45,7 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	for range ticker.C {
 		quiz, err := fetchQuestion()
 		if err != nil {
-			log.Println("Error fetching Gemini question:", err)
+			log.Println("Error fetching question:", err)
 			continue
 		}
 		questionMsg := map[string]interface{}{

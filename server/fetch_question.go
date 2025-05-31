@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -51,6 +52,7 @@ func fetchQuestion() (*QuizQuestion, error) {
 	}
 	systemPrompt := string(systemPromptBytes)
 	userPrompt := fmt.Sprintf("Generate a new question in the category '%s' and sub-category '%s'.", category, subcategory)
+	log.Printf("User prompt: %s", userPrompt)
 
 	requestBody := map[string]interface{}{
 		"model": "gpt-4.1-mini",
