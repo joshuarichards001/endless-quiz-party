@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
-	"math/rand"
 	"net/http"
 	"time"
 
@@ -18,19 +16,73 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-type StockPrice struct {
-	Symbol string  `json:"symbol"`
-	Price  float64 `json:"price"`
-	Time   string  `json:"time"`
+type QuizQuestion struct {
+	Question string   `json:"question"`
+	Options  []string `json:"options"`
+	Answer   int      `json:"answer"` // index of correct option
 }
 
-func fetchAppleStockPrice() StockPrice {
-	return StockPrice{
-		Symbol: "AAPL",
-		Price:  150.00 + rand.Float64()*(200.00-150.00),
-		Time:   time.Now().Format(time.RFC3339),
-	}
+// Question represents a quiz question
+var questions = []QuizQuestion{
+	{
+		Question: "What is the capital of France?",
+		Options:  []string{"Paris", "London", "Berlin", "Madrid"},
+		Answer:   0,
+	},
+	{
+		Question: "What is 2 + 2?",
+		Options:  []string{"3", "4", "5", "6"},
+		Answer:   1,
+	},
+	{
+		Question: "What is the largest planet in our solar system?",
+		Options:  []string{"Earth", "Mars", "Jupiter", "Saturn"},
+		Answer:   2,
+	},
+	{
+		Question: "Who wrote 'To Kill a Mockingbird'?",
+		Options:  []string{"Harper Lee", "Mark Twain", "Jane Austen", "Ernest Hemingway"},
+		Answer:   0,
+	},
+	{
+		Question: "What is the boiling point of water in Celsius?",
+		Options:  []string{"90", "100", "110", "120"},
+		Answer:   1,
+	},
+	{
+		Question: "What is the chemical symbol for gold?",
+		Options:  []string{"Au", "Ag", "Gd", "Go"},
+		Answer:   0,
+	},
+	{
+		Question: "Who painted the Mona Lisa?",
+		Options:  []string{"Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"},
+		Answer:   2,
+	},
+	{
+		Question: "What is the smallest prime number?",
+		Options:  []string{"0", "1", "2", "3"},
+		Answer:   2,
+	},
+	{
+		Question: "What year did the Titanic sink?",
+		Options:  []string{"1910", "1912", "1914", "1920"},
+		Answer:   1,
+	},
+	{
+		Question: "What is the square root of 64?",
+		Options:  []string{"6", "7", "8", "9"},
+		Answer:   2,
+	},
 }
+
+type User struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// We'll keep a simple in-memory list of users
+var users = make(map[string]User)
 
 func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -42,22 +94,33 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Client connected")
 
-	ticker := time.NewTicker(2 * time.Second)
+	questionIndex := 0
+	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		price := fetchAppleStockPrice()
-		message, err := json.Marshal(price)
-		if err != nil {
-			log.Println("Error marshalling json:", err)
-			break
-		}
+	// Send the first question immediately
+	questionMsg := map[string]interface{}{
+		"type":     "question",
+		"question": questions[questionIndex].Question,
+		"options":  questions[questionIndex].Options,
+	}
+	if err := conn.WriteJSON(questionMsg); err != nil {
+		log.Println("Error writing message:", err)
+		return
+	}
 
-		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+	for range ticker.C {
+		questionIndex = (questionIndex + 1) % len(questions)
+		questionMsg := map[string]interface{}{
+			"type":     "question",
+			"question": questions[questionIndex].Question,
+			"options":  questions[questionIndex].Options,
+		}
+		if err := conn.WriteJSON(questionMsg); err != nil {
 			log.Println("Error writing message:", err)
 			break
 		}
-		log.Printf("Sent: %s", message)
+		log.Printf("Sent question: %s", questions[questionIndex].Question)
 	}
 }
 

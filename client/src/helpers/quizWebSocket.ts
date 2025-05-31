@@ -22,6 +22,7 @@ export function connectQuizWebSocket() {
       const data = JSON.parse(event.data);
       if (data.type === "question") {
         setQuizStore("currentQuestion", data.question);
+        setQuizStore("currentOptions", data.options || []);
         setQuizStore("currentAnswer", null);
       }
     } catch (e) {

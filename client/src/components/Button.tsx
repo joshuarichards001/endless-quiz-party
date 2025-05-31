@@ -1,7 +1,7 @@
 import { Component, createEffect } from "solid-js";
 import { getButtonColor } from "../helpers/functions";
 import { sendQuizAnswer } from "../helpers/quizWebSocket";
-import { quizStore, setQuizStore } from "../state/quizStore";
+import { quizStore } from "../state/quizStore";
 
 interface Props {
   id: number;
@@ -25,10 +25,14 @@ const QuizButton: Component<Props> = ({ id, label }: Props) => {
           }
         `}
       onClick={() => {
+        if (quizStore.currentAnswer !== null) {
+          return;
+        }
+
         sendQuizAnswer(id);
       }}
     >
-      {label}
+      {quizStore.currentOptions[id] || label}
     </button>
   );
 };
