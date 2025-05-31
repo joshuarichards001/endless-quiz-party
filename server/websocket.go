@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -12,7 +13,13 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		return true
+		origin := r.Header.Get("Origin")
+		environment := os.Getenv("ENVIRONMENT")
+		if environment == "development" {
+			return origin == "http://127.0.0.1:3000"
+		} else {
+			return origin == "https://endlessquiz.party"
+		}
 	},
 }
 
@@ -21,13 +28,6 @@ type QuizQuestion struct {
 	Options  []string `json:"options"`
 	Answer   int      `json:"answer"`
 }
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-var users = make(map[string]User)
 
 func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -42,32 +42,21 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	// Send the first question immediately
-	quizQ, err := fetchGeminiQuestion()
-	if err == nil {
-		questionMsg := map[string]interface{}{
-			"type":     "question",
-			"question": quizQ.Question,
-			"options":  quizQ.Options,
-		}
-		conn.WriteJSON(questionMsg)
-	}
-
 	for range ticker.C {
-		quizQ, err := fetchGeminiQuestion()
+		quiz, err := fetchGeminiQuestion()
 		if err != nil {
 			log.Println("Error fetching Gemini question:", err)
 			continue
 		}
 		questionMsg := map[string]interface{}{
 			"type":     "question",
-			"question": quizQ.Question,
-			"options":  quizQ.Options,
+			"question": quiz.Question,
+			"options":  quiz.Options,
 		}
 		if err := conn.WriteJSON(questionMsg); err != nil {
 			log.Println("Error writing message:", err)
 			break
 		}
-		log.Printf("Sent question: %s", quizQ.Question)
+		log.Printf("Sent question: %s", quiz.Question)
 	}
 }

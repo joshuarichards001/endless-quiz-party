@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -47,14 +47,11 @@ func fetchGeminiQuestion() (*QuizQuestion, error) {
 
 	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", apiKey)
 
-	systemPrompt := "You are a game show host for a general knowledge quiz show similar to 'Who Wants to Be a Millionaire'.\nYour role is to generate engaging and challenging multiple-choice questions for the contestants.\nEach question should come with four possible answers, only one of which is correct.\nThe questions can span a range of categories, and subcategories.\nEach reply should be in a json format, like this:\n{\n\"Question\": \"question\",\n\"Options\": [\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"],\n\"Answer\": \"Option x\"\n}\nYou only reply with one question each time.\nIf you use apostrophes, make sure to escape them with a backslash, like this: \\'.\n"
-	userPrompt := "Now generate a new question"
-
-	fullPrompt := systemPrompt + "\n" + userPrompt
+	prompt := "You are a game show host for a general knowledge quiz show similar to 'Who Wants to Be a Millionaire'.\nYour role is to generate engaging and challenging multiple-choice questions for the contestants.\nEach question should come with four possible answers, only one of which is correct.\nThe questions can span a range of categories, and subcategories.\nEach reply should be in a json format, like this:\n{\n\"Question\": \"question\",\n\"Options\": [\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\"],\n\"Answer\": \"Option x\"\n}\nYou only reply with one question each time.\nIf you use apostrophes, make sure to escape them with a backslash, like this: \\'.\n Now generate a new question."
 
 	requestBody := map[string]interface{}{
 		"contents": []map[string]interface{}{
-			{"parts": []map[string]string{{"text": fullPrompt}}},
+			{"parts": []map[string]string{{"text": prompt}}},
 		},
 	}
 
@@ -64,7 +61,7 @@ func fetchGeminiQuestion() (*QuizQuestion, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 
 	var geminiResp GeminiAPIResponse
 	err = json.Unmarshal(body, &geminiResp)
