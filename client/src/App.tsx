@@ -1,7 +1,7 @@
 import { onMount } from "solid-js";
 import QuizButton from "./components/Button";
 import Question from "./components/Question";
-import { connectQuizWebSocket } from "./helpers/quizWebSocket";
+import { connectQuizWebSocket } from "./helpers/websocket";
 
 function App() {
   onMount(() => {

@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 import { getButtonColor } from "../helpers/functions";
-import { sendQuizAnswer } from "../helpers/quizWebSocket";
+import { sendQuizAnswer } from "../helpers/websocket";
 import { quizStore } from "../state/quizStore";
 
 interface Props {
