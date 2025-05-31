@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -77,19 +76,15 @@ func fetchQuestion() (*QuizQuestion, error) {
 
 	err = json.Unmarshal(body, &openAIResp)
 	if err != nil {
-		log.Printf("Failed to unmarshal OpenAI API response: %v\nRaw body: %s", err, string(body))
 		return nil, fmt.Errorf("invalid OpenAI API response: %v", err)
 	}
 
-	var questionText string
-	if len(openAIResp.Choices) > 0 {
-		questionText = openAIResp.Choices[0].Message.Content
-	} else {
-		log.Printf("OpenAI API response missing question. Raw body: %s", string(body))
+	if len(openAIResp.Choices) == 0 {
 		return nil, fmt.Errorf("invalid OpenAI API response: missing question")
 	}
 
-	questionText = cleanCodeBlock(questionText)
+	questionText := cleanCodeBlock(openAIResp.Choices[0].Message.Content)
+
 	var q struct {
 		Question string   `json:"Question"`
 		Options  []string `json:"Options"`
