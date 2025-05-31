@@ -1,7 +1,13 @@
+import { onMount } from "solid-js";
 import QuizButton from "./components/Button";
 import Question from "./components/Question";
+import { connectQuizWebSocket } from "./helpers/quizWebSocket";
 
 function App() {
+  onMount(() => {
+    connectQuizWebSocket();
+  });
+
   return (
     <div class="h-full p-10 flex flex-col justify-between">
       <Question />

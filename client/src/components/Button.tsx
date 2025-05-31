@@ -1,5 +1,6 @@
 import { Component, createEffect } from "solid-js";
 import { getButtonColor } from "../helpers/functions";
+import { sendQuizAnswer } from "../helpers/quizWebSocket";
 import { quizStore, setQuizStore } from "../state/quizStore";
 
 interface Props {
@@ -24,7 +25,7 @@ const QuizButton: Component<Props> = ({ id, label }: Props) => {
           }
         `}
       onClick={() => {
-        setQuizStore("currentAnswer", id);
+        sendQuizAnswer(id);
       }}
     >
       {label}
