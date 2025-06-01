@@ -13,7 +13,7 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
   return (
     <Show when={quizStore.currentOptions}>
       <button
-        class={`aspect-square ${buttonColor} border-b-4 font-bold rounded w-full h-full flex items-center justify-center text-xl
+        class={`aspect-square ${buttonColor} border-b-4 font-bold rounded w-full h-full flex items-center justify-center text-l
       ${
         quizStore.currentAnswer === index
           ? "ring-4 ring-offset-2 ring-indigo-500"

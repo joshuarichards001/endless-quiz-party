@@ -1,6 +1,7 @@
 import { onMount } from "solid-js";
 import Answer from "./components/Answer";
 import QuizButton from "./components/Button";
+import { FlameIcon, PersonIcon } from "./components/Icons";
 import Question from "./components/Question";
 import { connectQuizWebSocket } from "./helpers/websocket";
 import { quizStore } from "./state/quizStore";
@@ -11,12 +12,18 @@ function App() {
   });
 
   return (
-    <div class="h-full p-10 flex flex-col justify-between">
+    <div class="h-full p-6 flex flex-col">
       <Question />
       <Answer />
-      <p>{quizStore.currentStreak} streak</p>
-      <p>{quizStore.userCount} players</p>
-      <div class="grid grid-cols-2 grid-rows-2 gap-2">
+      <div class="flex items-center justify-between mb-4">
+        <span class="badge badge-outline badge-accent">
+          {quizStore.currentStreak} <FlameIcon />
+        </span>
+        <span class="badge badge-outline badge-info">
+          {quizStore.userCount} <PersonIcon />
+        </span>
+      </div>
+      <div class="grid grid-cols-2 grid-rows-2 gap-2 max-h-60">
         <QuizButton index={0} />
         <QuizButton index={1} />
         <QuizButton index={2} />
