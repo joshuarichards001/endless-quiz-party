@@ -8,6 +8,8 @@ export interface QuizState {
   currentOptions: string[];
   numberOfPlayers: number;
   numberOfSubmissions: number;
+  isAnswerCorrect: boolean | null;
+  correctAnswer: number | null;
 }
 
 export const [quizStore, setQuizStore] = createStore<QuizState>({
@@ -18,4 +20,6 @@ export const [quizStore, setQuizStore] = createStore<QuizState>({
   currentOptions: [],
   numberOfPlayers: 0,
   numberOfSubmissions: 0,
+  isAnswerCorrect: null,
+  correctAnswer: null,
 });

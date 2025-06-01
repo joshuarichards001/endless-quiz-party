@@ -24,6 +24,13 @@ export function connectQuizWebSocket() {
         setQuizStore("currentQuestion", data.question);
         setQuizStore("currentOptions", data.options || []);
         setQuizStore("currentAnswer", null);
+        setQuizStore("numberOfPlayers", data.UserCount || 0);
+      }
+
+      if (data.type === "answer_result") {
+        setQuizStore("currentStreak", data.currentStreak || 0);
+        setQuizStore("numberOfPlayers", data.UserCount || 0);
+        setQuizStore("isAnswerCorrect", data.YourAnswerCorrect || null);
       }
     } catch (e) {
       console.error("WebSocket message error", e);
@@ -39,6 +46,6 @@ export function connectQuizWebSocket() {
 export function sendQuizAnswer(answerId: number) {
   if (socket && socket.readyState === WebSocket.OPEN) {
     setQuizStore("currentAnswer", answerId);
-    socket.send(JSON.stringify({ type: "answer", answer: answerId }));
+    socket.send(JSON.stringify({ type: "submit_answer", answer: answerId }));
   }
 }
