@@ -1,5 +1,4 @@
 import { onMount } from "solid-js";
-import Answer from "./components/Answer";
 import QuizButton from "./components/Button";
 import { FlameIcon, PersonIcon } from "./components/Icons";
 import Question from "./components/Question";
@@ -14,7 +13,6 @@ function App() {
   return (
     <div class="h-full p-6 flex flex-col">
       <Question />
-      <Answer />
       <div class="flex items-center justify-between mb-4">
         <span class="badge badge-outline badge-accent">
           {quizStore.currentStreak} <FlameIcon />

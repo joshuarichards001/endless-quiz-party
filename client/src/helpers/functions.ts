@@ -1,4 +1,15 @@
-export const getButtonColor = (id: number): string => {
+export const getButtonColor = (
+  id: number,
+  correctAnswer: number | null
+): string => {
+  if (correctAnswer !== null) {
+    if (id === correctAnswer) {
+      return "bg-green-500 hover:active:bg-green-600 text-white border-green-700";
+    } else {
+      return "bg-red-500 hover:active:bg-red-600 text-white border-red-700";
+    }
+  }
+
   switch (id) {
     case 0:
       return "bg-blue-500 hover:active:bg-blue-600 text-white border-blue-700";
