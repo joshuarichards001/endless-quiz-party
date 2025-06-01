@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 )
@@ -64,9 +65,21 @@ func fetchQuestion(hub *Hub) (*Question, error) {
 
 	options := append([]string{decodedCorrectAnswer}, decodedIncorrectAnswers...)
 
+	rand.Shuffle(len(options), func(i, j int) {
+		options[i], options[j] = options[j], options[i]
+	})
+
+	correctIndex := 0
+	for i, opt := range options {
+		if opt == decodedCorrectAnswer {
+			correctIndex = i
+			break
+		}
+	}
+
 	return &Question{
 		Question: decodedQuestion,
 		Options:  options,
-		Answer:   0,
+		Answer:   correctIndex,
 	}, nil
 }
