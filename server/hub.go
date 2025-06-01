@@ -1,6 +1,9 @@
 package main
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"sync/atomic"
+)
 
 type UserAnswer struct {
 	Client *Client
@@ -21,7 +24,7 @@ type Hub struct {
 	ProcessAnswer  chan UserAnswer
 	ProcessResults chan ProcessResultsRequest
 	QuizManager    *QuizManager
-	UserCount      int
+	UserCount      int32
 }
 
 func NewHub(quizManager *QuizManager) *Hub {
@@ -52,14 +55,14 @@ func (h *Hub) Run() {
 
 		case client := <-h.Register:
 			h.Clients[client] = true
-			h.UserCount++
+			atomic.AddInt32(&h.UserCount, 1)
 			h.broadcastUserCount()
 
 		case client := <-h.Unregister:
 			if _, ok := h.Clients[client]; ok {
 				close(client.Send)
 				delete(h.Clients, client)
-				h.UserCount--
+				atomic.AddInt32(&h.UserCount, -1)
 				h.broadcastUserCount()
 			}
 
@@ -81,7 +84,7 @@ func (h *Hub) Run() {
 					Votes:             results.Votes,
 					YourAnswerCorrect: client.CurrentAnswer == results.Question.Answer,
 					CurrentStreak:     client.Streak,
-					UserCount:         h.UserCount,
+					UserCount:         int(atomic.LoadInt32(&h.UserCount)),
 				}
 				messageBytes, _ := json.Marshal(answerResultMsg)
 
@@ -98,7 +101,7 @@ func (h *Hub) Run() {
 }
 
 func (h *Hub) broadcastUserCount() {
-	countMsg := UserCountUpdateMessage{Type: "user_count", Count: h.UserCount}
+	countMsg := UserCountUpdateMessage{Type: "user_count", Count: int(atomic.LoadInt32(&h.UserCount))}
 	msgBytes, _ := json.Marshal(countMsg)
 	h.Broadcast <- msgBytes
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -63,7 +64,7 @@ func (qm *QuizManager) prepareFirstRound() bool {
 		Question:  qm.CurrentQuestion.Question,
 		Options:   qm.CurrentQuestion.Options,
 		TimeLeft:  int(questionTimerDuration.Seconds()),
-		UserCount: qm.Hub.UserCount,
+		UserCount: int(atomic.LoadInt32(&qm.Hub.UserCount)),
 	}
 	messageBytes, err := json.Marshal(questionMessage)
 
@@ -184,7 +185,7 @@ func (qm *QuizManager) startNewRound() {
 		Question:  currentQuestion.Question,
 		Options:   currentQuestion.Options,
 		TimeLeft:  10,
-		UserCount: qm.Hub.UserCount,
+		UserCount: int(atomic.LoadInt32(&qm.Hub.UserCount)),
 	}
 
 	messageBytes, err := json.Marshal(questionMessage)
