@@ -12,7 +12,7 @@ export function connectQuizWebSocket() {
     return;
   }
 
-  socket = new WebSocket(`ws://${import.meta.env.VITE_SERVER_URL}/ws`);
+  socket = new WebSocket(import.meta.env.VITE_SERVER_URL);
 
   socket.onopen = () => {
     console.log("WebSocket connected");
