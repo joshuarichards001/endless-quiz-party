@@ -57,15 +57,28 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			h.Clients[client] = true
 			atomic.AddInt32(&h.UserCount, 1)
-			questionMessage := QuestionMessage{
-				Type:      "question",
-				Question:  h.QuizManager.CurrentQuestion.Question,
-				Options:   h.QuizManager.CurrentQuestion.Options,
-				TimeLeft:  int(time.Until(h.QuizManager.QuestionEndTime).Seconds()),
-				UserCount: int(atomic.LoadInt32(&h.UserCount)),
+			if h.QuizManager.IsQuestionActive {
+				questionMessage := QuestionMessage{
+					Type:      "question",
+					Question:  h.QuizManager.CurrentQuestion.Question,
+					Options:   h.QuizManager.CurrentQuestion.Options,
+					TimeLeft:  int(time.Until(h.QuizManager.QuestionEndTime).Seconds()),
+					UserCount: int(atomic.LoadInt32(&h.UserCount)),
+				}
+				messageBytes, _ := json.Marshal(questionMessage)
+				client.Send <- messageBytes
+			} else {
+				answerResultMsg := AnswerResultMessage{
+					Type:              "answer_result",
+					CorrectAnswer:     h.QuizManager.CurrentQuestion.Answer,
+					Votes:             h.QuizManager.CurrentVotes,
+					YourAnswerCorrect: false,
+					CurrentStreak:     0,
+					UserCount:         int(atomic.LoadInt32(&h.UserCount)),
+				}
+				messageBytes, _ := json.Marshal(answerResultMsg)
+				client.Send <- messageBytes
 			}
-			messageBytes, _ := json.Marshal(questionMessage)
-			client.Send <- messageBytes
 
 		case client := <-h.Unregister:
 			if _, ok := h.Clients[client]; ok {
