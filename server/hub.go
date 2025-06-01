@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"sync/atomic"
+	"time"
 )
 
 type UserAnswer struct {
@@ -56,14 +57,21 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			h.Clients[client] = true
 			atomic.AddInt32(&h.UserCount, 1)
-			h.broadcastUserCount()
+			questionMessage := QuestionMessage{
+				Type:      "question",
+				Question:  h.QuizManager.CurrentQuestion.Question,
+				Options:   h.QuizManager.CurrentQuestion.Options,
+				TimeLeft:  int(time.Until(h.QuizManager.QuestionEndTime).Seconds()),
+				UserCount: int(atomic.LoadInt32(&h.UserCount)),
+			}
+			messageBytes, _ := json.Marshal(questionMessage)
+			client.Send <- messageBytes
 
 		case client := <-h.Unregister:
 			if _, ok := h.Clients[client]; ok {
 				close(client.Send)
 				delete(h.Clients, client)
 				atomic.AddInt32(&h.UserCount, -1)
-				h.broadcastUserCount()
 			}
 
 		case answer := <-h.ProcessAnswer:

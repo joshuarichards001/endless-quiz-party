@@ -25,7 +25,9 @@ type QuizManager struct {
 	CurrentVotes           map[int]int
 	mutex                  sync.Mutex
 	QuestionTimer          *time.Timer
+	QuestionEndTime        time.Time
 	AnswerTimer            *time.Timer
+	AnswerEndTime          time.Time
 	FetchQuestion          func(hub *Hub) (*Question, error)
 	IsQuestionActive       bool
 }
@@ -55,6 +57,7 @@ func (qm *QuizManager) prepareFirstRound() bool {
 	qm.IsQuestionActive = true
 	qm.NextQuestion = nil
 	qm.GeneratingNextQuestion = false
+	qm.QuestionEndTime = time.Now().Add(questionTimerDuration)
 	qm.mutex.Unlock()
 
 	go func() {
@@ -66,7 +69,7 @@ func (qm *QuizManager) prepareFirstRound() bool {
 		Type:      "question",
 		Question:  qm.CurrentQuestion.Question,
 		Options:   qm.CurrentQuestion.Options,
-		TimeLeft:  int(questionTimerDuration.Seconds()),
+		TimeLeft:  10,
 		UserCount: int(atomic.LoadInt32(&qm.Hub.UserCount)),
 	}
 	messageBytes, err := json.Marshal(questionMessage)
@@ -125,6 +128,7 @@ func (qm *QuizManager) endQuestionPhase() {
 
 	qm.mutex.Lock()
 	qm.IsQuestionActive = false
+	qm.AnswerEndTime = time.Now().Add(answerTimerDuration)
 	results := ProcessResultsRequest{
 		Answer: qm.CurrentQuestion.Answer,
 		Votes:  qm.CurrentVotes,
@@ -155,6 +159,7 @@ func (qm *QuizManager) startNewRound() {
 	qm.NextQuestion = nil
 	qm.CurrentVotes = make(map[int]int)
 	qm.IsQuestionActive = true
+	qm.QuestionEndTime = time.Now().Add(questionTimerDuration)
 
 	currentQuestion := qm.CurrentQuestion
 
