@@ -61,10 +61,10 @@ func (c *Client) ReadPump() {
 				}
 				c.Hub.ProcessAnswer <- userAnswer
 			} else {
-				log.Println("Received unknown message type after successful unmarshal:", incomingMessage.Type)
+				log.Println("Client.ReadPump - Received unknown message type after successful unmarshal:", incomingMessage.Type)
 			}
 		} else {
-			log.Println("Error unmarshaling message:", err, "Raw message:", string(message))
+			log.Println("Client.ReadPump - Error unmarshaling message:", err, "Raw message:", string(message))
 		}
 	}
 }
@@ -85,13 +85,13 @@ func (c *Client) WritePump() {
 				return
 			}
 			if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
-				log.Println("Error writing message:", err)
+				log.Println("Client.WritePump - Error writing message:", err)
 				return
 			}
 		case <-ticker.C:
 			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				log.Println("Error writing ping message:", err)
+				log.Println("Client.WritePump - Error writing ping message:", err)
 				return
 			}
 		}
