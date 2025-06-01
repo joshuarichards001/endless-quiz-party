@@ -48,7 +48,11 @@ func (c *Client) ReadPump() {
 	for {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
-			log.Println("Error reading message:", err)
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+				log.Println("Client - WebSocket closed:", err)
+			} else {
+				log.Println("Client - Error reading message:", err)
+			}
 			break
 		}
 
