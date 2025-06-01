@@ -1,39 +1,36 @@
-import { Component, createEffect } from "solid-js";
+import { Component, Show } from "solid-js";
 import { getButtonColor } from "../helpers/functions";
 import { sendQuizAnswer } from "../helpers/websocket";
 import { quizStore } from "../state/quizStore";
 
 interface Props {
-  id: number;
-  label: string;
+  index: number;
 }
 
-const QuizButton: Component<Props> = ({ id, label }: Props) => {
-  const buttonColor = getButtonColor(id);
-
-  createEffect(() => {
-    console.log(`Current answer changed to: ${quizStore.currentAnswer}`);
-  });
+const QuizButton: Component<Props> = ({ index }: Props) => {
+  const buttonColor = getButtonColor(index);
 
   return (
-    <button
-      class={`aspect-square ${buttonColor} border-b-4 font-bold rounded w-full h-full flex items-center justify-center text-3xl
-          ${
-            quizStore.currentAnswer === id
-              ? "ring-4 ring-offset-2 ring-indigo-500"
-              : ""
+    <Show when={quizStore.currentOptions}>
+      <button
+        class={`aspect-square ${buttonColor} border-b-4 font-bold rounded w-full h-full flex items-center justify-center text-xl
+      ${
+        quizStore.currentAnswer === index
+          ? "ring-4 ring-offset-2 ring-indigo-500"
+          : ""
+      }
+      `}
+        onClick={() => {
+          if (quizStore.currentAnswer !== null) {
+            return;
           }
-        `}
-      onClick={() => {
-        if (quizStore.currentAnswer !== null) {
-          return;
-        }
 
-        sendQuizAnswer(id);
-      }}
-    >
-      {quizStore.currentOptions[id] || label}
-    </button>
+          sendQuizAnswer(index);
+        }}
+      >
+        {quizStore.currentOptions![index]}
+      </button>
+    </Show>
   );
 };
 

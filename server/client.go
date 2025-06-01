@@ -54,17 +54,17 @@ func (c *Client) ReadPump() {
 
 		var incomingMessage SubmitAnswerMessage
 		if err := json.Unmarshal(message, &incomingMessage); err != nil {
-			if incomingMessage.Type == "submit_answer" {
-				userAnswer := UserAnswer{
-					Client: c,
-					Answer: incomingMessage.Answer,
-				}
-				c.Hub.ProcessAnswer <- userAnswer
-			} else {
-				log.Println("Client.ReadPump - Received unknown message type after successful unmarshal:", incomingMessage.Type)
-			}
-		} else {
 			log.Println("Client.ReadPump - Error unmarshaling message:", err, "Raw message:", string(message))
+		}
+
+		if incomingMessage.Type == MessageTypeSubmitAnswer {
+			userAnswer := UserAnswer{
+				Client: c,
+				Answer: incomingMessage.Answer,
+			}
+			c.Hub.ProcessAnswer <- userAnswer
+		} else {
+			log.Println("Client.ReadPump - Received unknown message type after successful unmarshal:", incomingMessage.Type)
 		}
 	}
 }

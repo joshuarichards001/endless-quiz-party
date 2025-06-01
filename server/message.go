@@ -24,5 +24,5 @@ type AnswerResultMessage struct {
 
 type UserCountUpdateMessage struct {
 	Type  string `json:"type"`
-	Count int    `json:"count"`
+	Count int    `json:"user_count"`
 }

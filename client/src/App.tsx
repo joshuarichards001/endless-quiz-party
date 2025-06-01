@@ -14,13 +14,13 @@ function App() {
     <div class="h-full p-10 flex flex-col justify-between">
       <Question />
       <Answer />
-      <p>{quizStore.currentStreak}</p>
-      <p>{quizStore.numberOfPlayers} players</p>
+      <p>{quizStore.currentStreak} streak</p>
+      <p>{quizStore.userCount} players</p>
       <div class="grid grid-cols-2 grid-rows-2 gap-2">
-        <QuizButton id={0} label="A" />
-        <QuizButton id={1} label="B" />
-        <QuizButton id={2} label="C" />
-        <QuizButton id={3} label="D" />
+        <QuizButton index={0} />
+        <QuizButton index={1} />
+        <QuizButton index={2} />
+        <QuizButton index={3} />
       </div>
     </div>
   );

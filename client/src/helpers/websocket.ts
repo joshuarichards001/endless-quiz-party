@@ -1,4 +1,5 @@
 import { setQuizStore } from "../state/quizStore";
+import { WebSocketMessageType } from "./constants";
 
 let socket: WebSocket | null = null;
 
@@ -20,17 +21,36 @@ export function connectQuizWebSocket() {
   socket.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data);
-      if (data.type === "question") {
-        setQuizStore("currentQuestion", data.question);
-        setQuizStore("currentOptions", data.options || []);
-        setQuizStore("currentAnswer", null);
-        setQuizStore("numberOfPlayers", data.UserCount || 0);
+      if (data.type === WebSocketMessageType.Question) {
+        const updateState = {
+          currentAnswer: null,
+          currentQuestion: data.question,
+          currentOptions: data.options,
+          // currentStreak unchanged,
+          userCount: data.user_count,
+          submissionCount: data.submission_count,
+          correctAnswer: null,
+        };
+        console.log("Received question:", updateState);
+        setQuizStore(updateState);
       }
 
-      if (data.type === "answer_result") {
-        setQuizStore("currentStreak", data.currentStreak || 0);
-        setQuizStore("numberOfPlayers", data.UserCount || 0);
-        setQuizStore("isAnswerCorrect", data.YourAnswerCorrect || null);
+      if (data.type === WebSocketMessageType.AnswerResult) {
+        const updateState = {
+          // currentAnswer unchanged,
+          // currentQuestion unchanged,
+          // currentOptions unchanged,
+          currentStreak: data.current_streak,
+          userCount: data.user_count,
+          submissionCount: data.submission_count,
+          correctAnswer: data.correct_answer,
+        };
+        console.log("Received answer result:", updateState);
+        setQuizStore(updateState);
+      }
+
+      if (data.type === WebSocketMessageType.UserCount) {
+        setQuizStore("userCount", data.user_count || 0);
       }
     } catch (e) {
       console.error("WebSocket message error", e);
@@ -43,9 +63,15 @@ export function connectQuizWebSocket() {
   };
 }
 
-export function sendQuizAnswer(answerId: number) {
+export function sendQuizAnswer(answerIndex: number) {
   if (socket && socket.readyState === WebSocket.OPEN) {
-    setQuizStore("currentAnswer", answerId);
-    socket.send(JSON.stringify({ type: "submit_answer", answer: answerId }));
+    setQuizStore("currentAnswer", answerIndex);
+
+    socket.send(
+      JSON.stringify({
+        type: WebSocketMessageType.SubmitAnswer,
+        answer: answerIndex,
+      })
+    );
   }
 }

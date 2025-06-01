@@ -11,7 +11,7 @@ type UserAnswer struct {
 }
 
 type ProcessResultsRequest struct {
-	Question       *Question
+	Answer         int
 	Votes          map[int]int
 	RevealDuration int
 }
@@ -72,7 +72,7 @@ func (h *Hub) Run() {
 
 		case results := <-h.ProcessResults:
 			for client := range h.Clients {
-				if client.CurrentAnswer == results.Question.Answer {
+				if client.CurrentAnswer == results.Answer {
 					client.Streak++
 				} else {
 					client.Streak = 0
@@ -80,9 +80,9 @@ func (h *Hub) Run() {
 
 				answerResultMsg := AnswerResultMessage{
 					Type:              "answer_result",
-					CorrectAnswer:     results.Question.Answer,
+					CorrectAnswer:     results.Answer,
 					Votes:             results.Votes,
-					YourAnswerCorrect: client.CurrentAnswer == results.Question.Answer,
+					YourAnswerCorrect: client.CurrentAnswer == results.Answer,
 					CurrentStreak:     client.Streak,
 					UserCount:         int(atomic.LoadInt32(&h.UserCount)),
 				}

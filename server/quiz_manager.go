@@ -122,31 +122,15 @@ func (qm *QuizManager) endQuestionPhase() {
 
 	qm.mutex.Lock()
 	qm.IsQuestionActive = false
-	currentQuestion := qm.CurrentQuestion
-	votes := qm.CurrentVotes
+	results := ProcessResultsRequest{
+		Answer: qm.CurrentQuestion.Answer,
+		Votes:  qm.CurrentVotes,
+	}
 	qm.mutex.Unlock()
 
-	answerMessage := struct {
-		Type     string      `json:"type"`
-		Answer   int         `json:"answer"`
-		Votes    map[int]int `json:"votes"`
-		Question string      `json:"question"`
-	}{
-		Type:     "answer",
-		Answer:   currentQuestion.Answer,
-		Votes:    votes,
-		Question: currentQuestion.Question,
-	}
+	qm.Hub.ProcessResults <- results
 
-	messageBytes, err := json.Marshal(answerMessage)
-	if err != nil {
-		log.Println("QuizManager.endQuestionPhase - error marshalling answer message:", err)
-		return
-	}
-
-	qm.Hub.BroadcastMessage(messageBytes)
-
-	log.Printf("QuizManager.endQuestionPhase - Broadcasted answer: %.20s, votes: %v", currentQuestion.Question, votes)
+	log.Printf("QuizManager.endQuestionPhase - Broadcasted answer: %.20s, votes: %v", qm.CurrentQuestion.Question, qm.CurrentVotes)
 
 	qm.AnswerTimer = time.AfterFunc(answerTimerDuration, func() {
 		qm.startNewRound()

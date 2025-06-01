@@ -1,25 +1,24 @@
 import { createStore } from "solid-js/store";
 
 export interface QuizState {
-  bestStreak: number;
-  currentStreak: number;
   currentAnswer: number | null;
   currentQuestion: string | null;
-  currentOptions: string[];
-  numberOfPlayers: number;
-  numberOfSubmissions: number;
-  isAnswerCorrect: boolean | null;
+  currentOptions: string[] | null;
+  currentStreak: number;
+  userCount: number;
+  submissionCount: number;
   correctAnswer: number | null;
 }
 
-export const [quizStore, setQuizStore] = createStore<QuizState>({
-  bestStreak: 0,
-  currentStreak: 0,
+export const defaultQuizState: QuizState = {
   currentAnswer: null,
   currentQuestion: null,
-  currentOptions: [],
-  numberOfPlayers: 0,
-  numberOfSubmissions: 0,
-  isAnswerCorrect: null,
+  currentOptions: null,
+  currentStreak: 0,
+  userCount: 0,
+  submissionCount: 0,
   correctAnswer: null,
-});
+};
+
+export const [quizStore, setQuizStore] =
+  createStore<QuizState>(defaultQuizState);
