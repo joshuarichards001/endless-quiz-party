@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -23,40 +22,18 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-type QuizQuestion struct {
-	Question string   `json:"question"`
-	Options  []string `json:"options"`
-	Answer   int      `json:"answer"`
-}
-
-func websocketHandler(w http.ResponseWriter, r *http.Request) {
+func websocketHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	defer conn.Close()
 
-	log.Println("Client connected")
+	client := NewClient(hub, conn, "Anonymous") // TODO: handle client name properly
+	hub.Register <- client
 
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
+	go client.ReadPump()
+	go client.WritePump()
 
-	for range ticker.C {
-		quiz, err := fetchQuestion()
-		if err != nil {
-			log.Println("Error fetching question:", err)
-			continue
-		}
-		questionMsg := map[string]interface{}{
-			"type":     "question",
-			"question": quiz.Question,
-			"options":  quiz.Options,
-		}
-		if err := conn.WriteJSON(questionMsg); err != nil {
-			log.Println("Error writing message:", err)
-			break
-		}
-		log.Printf("Sent question: %s", quiz.Question)
-	}
+	log.Printf("New client connected: %s", client.Name)
 }

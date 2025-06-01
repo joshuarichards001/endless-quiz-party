@@ -30,7 +30,7 @@ func getOpenAIAPIKey() (string, error) {
 	return apiKey, nil
 }
 
-func fetchQuestion() (*QuizQuestion, error) {
+func fetchQuestion() (*Question, error) {
 	apiKey, err := getOpenAIAPIKey()
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func fetchQuestion() (*QuizQuestion, error) {
 		return nil, fmt.Errorf("answer not found in options")
 	}
 
-	return &QuizQuestion{
+	return &Question{
 		Question: q.Question,
 		Options:  q.Options,
 		Answer:   answerIdx,

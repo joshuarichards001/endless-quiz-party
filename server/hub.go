@@ -1,0 +1,108 @@
+package main
+
+import "encoding/json"
+
+type UserAnswer struct {
+	Client *Client
+	Answer int
+}
+
+type ProcessResultsRequest struct {
+	Question       *Question
+	Votes          map[int]int
+	RevealDuration int
+}
+
+type Hub struct {
+	Clients        map[*Client]bool
+	Broadcast      chan []byte
+	Register       chan *Client
+	Unregister     chan *Client
+	ProcessAnswer  chan UserAnswer
+	ProcessResults chan ProcessResultsRequest
+	QuizManager    *QuizManager
+	UserCount      int
+}
+
+func NewHub(quizManager *QuizManager) *Hub {
+	return &Hub{
+		Clients:        make(map[*Client]bool),
+		Broadcast:      make(chan []byte, 512),
+		Register:       make(chan *Client),
+		Unregister:     make(chan *Client),
+		ProcessAnswer:  make(chan UserAnswer),
+		ProcessResults: make(chan ProcessResultsRequest),
+		QuizManager:    quizManager,
+		UserCount:      0,
+	}
+}
+
+func (h *Hub) Run() {
+	for {
+		select {
+		case message := <-h.Broadcast:
+			for client := range h.Clients {
+				select {
+				case client.Send <- message:
+				default:
+					close(client.Send)
+					delete(h.Clients, client)
+				}
+			}
+
+		case client := <-h.Register:
+			h.Clients[client] = true
+			h.UserCount++
+			h.broadcastUserCount()
+
+		case client := <-h.Unregister:
+			if _, ok := h.Clients[client]; ok {
+				close(client.Send)
+				delete(h.Clients, client)
+				h.UserCount--
+				h.broadcastUserCount()
+			}
+
+		case answer := <-h.ProcessAnswer:
+			answer.Client.CurrentAnswer = answer.Answer
+			h.QuizManager.RecordVote(answer.Answer)
+
+		case results := <-h.ProcessResults:
+			for client := range h.Clients {
+				if client.CurrentAnswer == results.Question.Answer {
+					client.Streak++
+				} else {
+					client.Streak = 0
+				}
+
+				answerResultMsg := AnswerResultMessage{
+					Type:              "answer_result",
+					CorrectAnswer:     results.Question.Answer,
+					Votes:             results.Votes,
+					YourAnswerCorrect: client.CurrentAnswer == results.Question.Answer,
+					CurrentStreak:     client.Streak,
+					UserCount:         h.UserCount,
+				}
+				messageBytes, _ := json.Marshal(answerResultMsg)
+
+				select {
+				case client.Send <- messageBytes:
+				default:
+					close(client.Send)
+					delete(h.Clients, client)
+				}
+				client.CurrentAnswer = -1
+			}
+		}
+	}
+}
+
+func (h *Hub) broadcastUserCount() {
+	countMsg := UserCountUpdateMessage{Type: "user_count", Count: h.UserCount}
+	msgBytes, _ := json.Marshal(countMsg)
+	h.Broadcast <- msgBytes
+}
+
+func (h *Hub) BroadcastMessage(message []byte) {
+	h.Broadcast <- message
+}
