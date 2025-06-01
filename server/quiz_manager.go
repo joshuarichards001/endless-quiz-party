@@ -25,11 +25,11 @@ type QuizManager struct {
 	mutex                  sync.Mutex
 	QuestionTimer          *time.Timer
 	AnswerTimer            *time.Timer
-	FetchQuestion          func() (*Question, error)
+	FetchQuestion          func(hub *Hub) (*Question, error)
 	IsQuestionActive       bool
 }
 
-func NewQuizManager(hub *Hub, fetchQuestion func() (*Question, error)) *QuizManager {
+func NewQuizManager(hub *Hub, fetchQuestion func(hub *Hub) (*Question, error)) *QuizManager {
 	return &QuizManager{
 		Hub:           hub,
 		CurrentVotes:  make(map[int]int),
@@ -40,7 +40,7 @@ func NewQuizManager(hub *Hub, fetchQuestion func() (*Question, error)) *QuizMana
 func (qm *QuizManager) prepareFirstRound() bool {
 	log.Println("QuizManager.prepareFirstRound - Preparing first round...")
 
-	firstQuestion, err := qm.FetchQuestion()
+	firstQuestion, err := qm.FetchQuestion(qm.Hub)
 	if err != nil {
 		log.Printf("QuizManager.prepareFirstRound - Error fetching very first question: %v", err)
 		return false
@@ -101,7 +101,7 @@ func (qm *QuizManager) ensureNextQuestionIsFetched() {
 	qm.GeneratingNextQuestion = true
 	qm.mutex.Unlock()
 
-	nextQuestion, err := qm.FetchQuestion()
+	nextQuestion, err := qm.FetchQuestion(qm.Hub)
 
 	qm.mutex.Lock()
 	defer qm.mutex.Unlock()

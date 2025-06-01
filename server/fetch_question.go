@@ -29,7 +29,15 @@ func getOpenAIAPIKey() (string, error) {
 	return apiKey, nil
 }
 
-func fetchQuestion() (*Question, error) {
+func fetchQuestion(hub *Hub) (*Question, error) {
+	if hub == nil || hub.UserCount == 0 {
+		return &Question{
+			Question: "Is anybody there?",
+			Options:  []string{"Yes", "No", "Maybe", "Huh?"},
+			Answer:   1,
+		}, nil
+	}
+
 	apiKey, err := getOpenAIAPIKey()
 	if err != nil {
 		return nil, err
