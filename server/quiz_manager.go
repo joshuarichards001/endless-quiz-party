@@ -39,15 +39,17 @@ func NewQuizManager(hub *Hub, fetchQuestion func(hub *Hub) (*Question, error)) *
 }
 
 func (qm *QuizManager) prepareFirstRound() bool {
-	log.Println("QuizManager.prepareFirstRound - Preparing first round...")
-
 	firstQuestion, err := qm.FetchQuestion(qm.Hub)
 	if err != nil {
-		log.Printf("QuizManager.prepareFirstRound - Error fetching very first question: %v", err)
+		log.Printf("QuizManager: Error fetching very first question: %v", err)
+		return false
+	}
+	if firstQuestion == nil {
+		log.Println("QuizManager: Fetched very first question successfully, but it was nil. Cannot start.")
 		return false
 	}
 
-	log.Printf("QuizManager.prepareFirstRound - First question fetched: %.20s", firstQuestion.Question)
+	log.Printf("QuizManager: First question fetched: \"%.20s...\"", firstQuestion.Question)
 
 	qm.mutex.Lock()
 	qm.CurrentQuestion = firstQuestion
@@ -67,18 +69,18 @@ func (qm *QuizManager) prepareFirstRound() bool {
 		Type:      "question",
 		Question:  qm.CurrentQuestion.Question,
 		Options:   qm.CurrentQuestion.Options,
-		TimeLeft:  10,
+		TimeLeft:  int(questionTimerDuration.Seconds()),
 		UserCount: int(atomic.LoadInt32(&qm.Hub.UserCount)),
 	}
 	messageBytes, err := json.Marshal(questionMessage)
 
 	if err != nil {
-		log.Println("QuizManager.prepareFirstRound - error marshalling first question message:", err)
+		log.Printf("QuizManager: Error marshalling first question message: %v", err)
 		return false
 	}
 	qm.Hub.BroadcastMessage(messageBytes)
 
-	log.Printf("QuizManager.prepareFirstRound - Broadcasted first question: %.20s", qm.CurrentQuestion.Question)
+	log.Printf("QuizManager: Broadcasted first question: \"%.20s...\"", qm.CurrentQuestion.Question)
 
 	go func() {
 		time.Sleep(questionTimerDuration)
@@ -88,55 +90,62 @@ func (qm *QuizManager) prepareFirstRound() bool {
 }
 
 func (qm *QuizManager) Run() {
-	log.Println("QuizManager.Run - running...")
 	if !qm.prepareFirstRound() {
-		log.Println("QuizManager.Run - failed to prepare first round, stopping...")
+		log.Println("QuizManager: Failed to prepare first round, stopping.")
 		return
 	}
 }
 
 func (qm *QuizManager) ensureNextQuestionIsFetched() {
+	qm.mutex.Lock()
 	if qm.NextQuestion != nil || qm.GeneratingNextQuestion {
-		log.Println("QuizManager.ensureNextQuestionIsFetched - Next question already fetched or in progress, skipping...")
+		log.Println("QuizManager: Next question fetch skipped (already available or in progress).")
+		qm.mutex.Unlock()
 		return
 	}
-
-	log.Println("QuizManager.ensureNextQuestionIsFetched - Fetching next question in background...")
-
-	qm.mutex.Lock()
 	qm.GeneratingNextQuestion = true
 	qm.mutex.Unlock()
 
+	log.Println("QuizManager: Fetching next question in background...")
 	nextQuestion, err := qm.FetchQuestion(qm.Hub)
 
 	qm.mutex.Lock()
 	defer qm.mutex.Unlock()
 
 	if err != nil {
-		log.Println("QuizManager.ensureNextQuestionIsFetched - Error fetching next question:", err)
+		log.Printf("QuizManager: Error fetching next question: %v", err)
 		qm.NextQuestion = nil
 	} else {
-		log.Printf("QuizManager.ensureNextQuestionIsFetched - Successfully fetched next question: %.20s", nextQuestion.Question)
+		if nextQuestion == nil {
+			log.Println("QuizManager: Next question fetch returned no question (nil).")
+		} else {
+			log.Printf("QuizManager: Successfully fetched next question: \"%.20s...\"", nextQuestion.Question)
+		}
 		qm.NextQuestion = nextQuestion
 	}
 	qm.GeneratingNextQuestion = false
 }
 
 func (qm *QuizManager) endQuestionPhase() {
-	log.Println("QuizManager.endQuestionPhase - Ending question phase...")
-
 	qm.mutex.Lock()
+	log.Printf("QuizManager: Ending question phase for \"%.20s...\".", qm.CurrentQuestion.Question)
 	qm.IsQuestionActive = false
 	qm.AnswerEndTime = time.Now().Add(answerTimerDuration)
 	results := ProcessResultsRequest{
 		Answer: qm.CurrentQuestion.Answer,
 		Votes:  qm.CurrentVotes,
 	}
+	currentQuestionInfo := qm.CurrentQuestion.Question
+	currentAnswer := qm.CurrentQuestion.Answer
+	votes := make(map[int]int)
+	for k, v := range qm.CurrentVotes {
+		votes[k] = v
+	}
 	qm.mutex.Unlock()
 
 	qm.Hub.ProcessResults <- results
 
-	log.Printf("QuizManager.endQuestionPhase - Broadcasted answer: %.20s, votes: %v", qm.CurrentQuestion.Question, qm.CurrentVotes)
+	log.Printf("QuizManager: Results processed for question \"%.20s...\". Correct answer: %d, Votes: %v", currentQuestionInfo, currentAnswer, votes)
 
 	go func() {
 		time.Sleep(answerTimerDuration)
@@ -145,51 +154,44 @@ func (qm *QuizManager) endQuestionPhase() {
 }
 
 func (qm *QuizManager) startNewRound() {
-	log.Println("QuizManager.startNewRound - Starting new round...")
+	log.Println("QuizManager: Attempting to start new round...")
 
 	qm.mutex.Lock()
-
 	if qm.NextQuestion == nil {
-		log.Println("QuizManager.startNewRound - no next question available, cannot start new round")
+		log.Println("QuizManager: No next question available. Cannot start new round.")
+		qm.mutex.Unlock()
 		return
-	} else {
-		qm.CurrentQuestion = qm.NextQuestion
 	}
+
+	qm.CurrentQuestion = qm.NextQuestion
+	log.Printf("QuizManager: New round starting with question: \"%.20s...\"", qm.CurrentQuestion.Question)
 
 	qm.NextQuestion = nil
 	qm.CurrentVotes = make(map[int]int)
 	qm.IsQuestionActive = true
 	qm.QuestionEndTime = time.Now().Add(questionTimerDuration)
 
-	currentQuestion := qm.CurrentQuestion
-
+	currentQuestionForMessage := qm.CurrentQuestion
 	qm.mutex.Unlock()
 
-	qm.ensureNextQuestionIsFetched()
-
-	if currentQuestion == nil {
-		log.Println("QuizManager.startNewRound - no current question available, cannot start new round")
-		return
-	}
+	go qm.ensureNextQuestionIsFetched()
 
 	questionMessage := QuestionMessage{
 		Type:      "question",
-		Question:  currentQuestion.Question,
-		Options:   currentQuestion.Options,
-		TimeLeft:  10,
+		Question:  currentQuestionForMessage.Question,
+		Options:   currentQuestionForMessage.Options,
+		TimeLeft:  int(questionTimerDuration.Seconds()),
 		UserCount: int(atomic.LoadInt32(&qm.Hub.UserCount)),
 	}
 
 	messageBytes, err := json.Marshal(questionMessage)
 	if err != nil {
-		log.Println("QuizManager.startNewRound - error marshalling question message:", err)
+		log.Printf("QuizManager: Error marshalling question message for new round: %v", err)
 		return
 	}
 
 	qm.Hub.BroadcastMessage(messageBytes)
-
-	qm.mutex.Lock()
-	defer qm.mutex.Unlock()
+	log.Printf("QuizManager: Broadcasted new round question: \"%.20s...\"", currentQuestionForMessage.Question)
 
 	go func() {
 		time.Sleep(questionTimerDuration)
@@ -202,7 +204,7 @@ func (qm *QuizManager) RecordVote(answer int) {
 	defer qm.mutex.Unlock()
 
 	if !qm.IsQuestionActive {
-		log.Println("QuizManager.RecordVote - question is not active, cannot record vote")
+		log.Println("QuizManager: Vote rejected, question not active.")
 		return
 	}
 

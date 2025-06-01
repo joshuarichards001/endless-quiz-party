@@ -35,5 +35,5 @@ func websocketHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	go client.ReadPump()
 	go client.WritePump()
 
-	log.Printf("Websocket.websocketHandler - New client connected: %s", client.Name)
+	log.Printf("Websocket - New client connected: %s", client.Name)
 }
