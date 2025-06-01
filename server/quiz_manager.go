@@ -24,9 +24,7 @@ type QuizManager struct {
 	GeneratingNextQuestion bool
 	CurrentVotes           map[int]int
 	mutex                  sync.Mutex
-	QuestionTimer          *time.Timer
 	QuestionEndTime        time.Time
-	AnswerTimer            *time.Timer
 	AnswerEndTime          time.Time
 	FetchQuestion          func(hub *Hub) (*Question, error)
 	IsQuestionActive       bool
@@ -82,9 +80,10 @@ func (qm *QuizManager) prepareFirstRound() bool {
 
 	log.Printf("QuizManager.prepareFirstRound - Broadcasted first question: %.20s", qm.CurrentQuestion.Question)
 
-	qm.QuestionTimer = time.AfterFunc(questionTimerDuration, func() {
+	go func() {
+		time.Sleep(questionTimerDuration)
 		qm.endQuestionPhase()
-	})
+	}()
 	return true
 }
 
@@ -139,9 +138,10 @@ func (qm *QuizManager) endQuestionPhase() {
 
 	log.Printf("QuizManager.endQuestionPhase - Broadcasted answer: %.20s, votes: %v", qm.CurrentQuestion.Question, qm.CurrentVotes)
 
-	qm.AnswerTimer = time.AfterFunc(answerTimerDuration, func() {
+	go func() {
+		time.Sleep(answerTimerDuration)
 		qm.startNewRound()
-	})
+	}()
 }
 
 func (qm *QuizManager) startNewRound() {
@@ -191,9 +191,10 @@ func (qm *QuizManager) startNewRound() {
 	qm.mutex.Lock()
 	defer qm.mutex.Unlock()
 
-	qm.QuestionTimer = time.AfterFunc(questionTimerDuration, func() {
+	go func() {
+		time.Sleep(questionTimerDuration)
 		qm.endQuestionPhase()
-	})
+	}()
 }
 
 func (qm *QuizManager) RecordVote(answer int) {
