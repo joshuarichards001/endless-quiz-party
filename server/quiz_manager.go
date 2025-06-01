@@ -57,7 +57,10 @@ func (qm *QuizManager) prepareFirstRound() bool {
 	qm.GeneratingNextQuestion = false
 	qm.mutex.Unlock()
 
-	go qm.ensureNextQuestionIsFetched()
+	go func() {
+		time.Sleep(5 * time.Second)
+		qm.ensureNextQuestionIsFetched()
+	}()
 
 	questionMessage := QuestionMessage{
 		Type:      "question",
