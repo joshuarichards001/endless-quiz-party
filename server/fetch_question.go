@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"os"
@@ -48,11 +49,23 @@ func fetchQuestion(hub *Hub) (*Question, error) {
 		return nil, fmt.Errorf("could not parse question JSON: %v", err)
 	}
 
+	if len(apiResp.Results) == 0 {
+		return nil, fmt.Errorf("no results found in trivia API response")
+	}
+
 	result := apiResp.Results[0]
-	options := append([]string{result.CorrectAnswer}, result.IncorrectAnswers...)
+
+	decodedQuestion := html.UnescapeString(result.Question)
+	decodedCorrectAnswer := html.UnescapeString(result.CorrectAnswer)
+	decodedIncorrectAnswers := make([]string, len(result.IncorrectAnswers))
+	for i, incorrectAnswer := range result.IncorrectAnswers {
+		decodedIncorrectAnswers[i] = html.UnescapeString(incorrectAnswer)
+	}
+
+	options := append([]string{decodedCorrectAnswer}, decodedIncorrectAnswers...)
 
 	return &Question{
-		Question: result.Question,
+		Question: decodedQuestion,
 		Options:  options,
 		Answer:   0,
 	}, nil
