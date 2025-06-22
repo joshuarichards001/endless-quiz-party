@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 import { quizStore } from "../state/quizStore";
-import DonutTimer from "./DonutTimer";
+import Timer from "./Timer";
 
 const Question: Component<{}> = (props) => {
   let lastQuestion: string | null = null;
@@ -22,7 +22,7 @@ const Question: Component<{}> = (props) => {
         <div class="p-4 w-full bg-accent text-accent-content shadow-lg rounded-xl relative">
           {quizStore.currentQuestion && (
             <div style="float: right; margin-left: 4px; margin-bottom: 4px; width: 40px; height: 40px;">
-              <DonutTimer duration={8} trigger={quizStore.currentQuestion} />
+              <Timer duration={10} trigger={quizStore.currentQuestion} />
             </div>
           )}
           <p class="text-xl break-words">

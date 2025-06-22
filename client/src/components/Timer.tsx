@@ -1,11 +1,11 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
 
-interface DonutTimerProps {
+interface TimerProps {
   duration: number;
   trigger: string | null;
 }
 
-const DonutTimer = (props: DonutTimerProps) => {
+const Timer = (props: TimerProps) => {
   const [progress, setProgress] = createSignal(1);
   const [timeLeft, setTimeLeft] = createSignal(props.duration);
 
@@ -92,4 +92,4 @@ const DonutTimer = (props: DonutTimerProps) => {
   );
 };
 
-export default DonutTimer;
+export default Timer;
