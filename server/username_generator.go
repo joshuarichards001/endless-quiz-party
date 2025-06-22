@@ -19,6 +19,19 @@ var adjectives = []string{
 	"lucky", "unlucky", "strong", "weak", "tall", "short", "big", "small",
 	"electric", "cosmic", "stellar", "lunar", "solar", "oceanic", "mountain", "forest",
 	"desert", "arctic", "tropical", "windy", "stormy", "sunny", "cloudy", "misty",
+	"wandering", "fading", "rising", "falling", "broken", "forged", "crafted", "woven",
+	"forgotten", "hidden", "lost", "forbidden", "sacred", "lonely", "shadowy", "luminous",
+	"whispering", "roaring", "glowing", "shimmering", "glimmering", "flickering", "burning",
+	"frozen", "molten", "crystal", "obsidian", "iron", "steel", "oaken", "stone",
+	"phantom", "ghostly", "spectral", "ethereal", "celestial", "astral", "void",
+	"quantum", "binary", "digital", "virtual", "augmented", "cyber", "glitching", "pixelated",
+	"epic", "legendary", "mythic", "fabled", "ultimate", "primal", "vivid", "hollow",
+	"crimson", "scarlet", "indigo", "ebony", "ivory", "sapphire", "ruby", "jade",
+	"static", "dynamic", "gripping", "powerful", "tenacious", "resolute", "fearless",
+	"patient", "humble", "noble", "loyal", "valiant", "daring", "curious", "zany",
+	"inverted", "parallel", "quantum", "atomic", "nuclear", "temporal", "spatial",
+	"secret", "covert", "stealthy", "nocturnal", "diurnal", "creeping", "soaring",
+	"dreaded", "ironclad", "arcane", "ornate", "somber", "serene", "tranquil", "placid",
 }
 
 var nouns = []string{
@@ -38,6 +51,22 @@ var nouns = []string{
 	"key", "door", "window", "mirror", "clock", "bell", "drum", "guitar",
 	"magic", "wizard", "dragon", "unicorn", "fairy", "knight", "princess", "treasure",
 	"adventure", "journey", "quest", "mystery", "secret", "surprise", "gift", "party",
+	"specter", "phantom", "ghost", "wraith", "spirit", "shade", "banshee", "poltergeist",
+	"dream", "nightmare", "echo", "mirage", "illusion", "oracle", "prophet", "seer",
+	"bard", "rogue", "mage", "warlock", "paladin", "druid", "ranger", "cleric",
+	"golem", "gargoyle", "phoenix", "griffon", "sphinx", "serpent", "wyvern", "kraken",
+	"leviathan", "chimera", "hydra", "cyclops", "minotaur", "centaur", "satyr", "goblin",
+	"automaton", "cyborg", "android", "replicant", "bot", "droid", "mainframe", "server",
+	"algorithm", "protocol", "cipher", "matrix", "kernel", "shell", "syntax", "glitch",
+	"pixel", "voxel", "node", "nexus", "vertex", "vector", "stream", "data",
+	"crux", "hold", "grip", "chalk", "crimp", "sloper", "dyno", "summit",
+	"melody", "harmony", "rhythm", "chord", "sonata", "nocturne", "symphony", "cadence",
+	"nebula", "galaxy", "supernova", "quasar", "comet", "asteroid", "meteor", "planet",
+	"artifact", "relic", "tome", "scroll", "rune", "sigil", "talisman", "amulet",
+	"abyss", "chasm", "void", "rift", "vortex", "portal", "gate", "sanctuary",
+	"sentinel", "guardian", "warden", "champion", "herald", "scout", "pioneer",
+	"wanderer", "pilgrim", "nomad", "drifter", "exile", "outcast", "rebel", "rogue",
+	"protagonist", "antagonist", "script", "scene", "reel", "cameo", "foley", "trope",
 }
 
 var rng *rand.Rand
