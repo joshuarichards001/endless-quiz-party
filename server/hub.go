@@ -151,34 +151,23 @@ func (h *Hub) BroadcastMessage(message []byte) {
 }
 
 func (h *Hub) getLeaderboard() []LeaderboardEntry {
-	type clientStreak struct {
-		client *Client
-		streak int
-	}
-
-	var clientStreaks []clientStreak
+	var leaderboard []LeaderboardEntry
+	clientStreaks := make([]*Client, 0, len(h.Clients))
+	
 	for client := range h.Clients {
-		clientStreaks = append(clientStreaks, clientStreak{
-			client: client,
-			streak: client.Streak,
-		})
+		clientStreaks = append(clientStreaks, client)
 	}
 
 	sort.Slice(clientStreaks, func(i, j int) bool {
-		return clientStreaks[i].streak > clientStreaks[j].streak
+		return clientStreaks[i].Streak > clientStreaks[j].Streak
 	})
 
-	var leaderboard []LeaderboardEntry
-	maxEntries := 5
+	maxEntries := min(len(clientStreaks), 5)
 
-	if len(clientStreaks) < maxEntries {
-		maxEntries = len(clientStreaks)
-	}
-
-	for i := 0; i < maxEntries; i++ {
+	for i := range maxEntries {
 		leaderboard = append(leaderboard, LeaderboardEntry{
-			Username: clientStreaks[i].client.Name,
-			Streak:   clientStreaks[i].streak,
+			Username: clientStreaks[i].Name,
+			Streak:   clientStreaks[i].Streak,
 			Rank:     i + 1,
 		})
 	}
