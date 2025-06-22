@@ -49,7 +49,7 @@ You can customize the test using environment variables:
 NUM_CLIENTS=50 TEST_DURATION_MS=120000 npm start
 
 # Test against remote server
-WS_URL=ws://your-server.com:8080/ws npm start
+WS_URL=wss://endless-quiz-server.fly.dev/ws npm start
 
 # Enable debug logging
 DEBUG=true npm start
@@ -57,15 +57,15 @@ DEBUG=true npm start
 
 ### Available Configuration Options
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `WS_URL` | `ws://localhost:8080/ws` | WebSocket server URL |
-| `NUM_CLIENTS` | `100` | Number of concurrent clients |
-| `TEST_DURATION_MS` | `300000` | Test duration (5 minutes) |
-| `MAX_ANSWER_DELAY_MS` | `1000` | Maximum delay before answering |
-| `CONNECTION_STAGGER_MS` | `100` | Delay between connection batches |
-| `STATS_INTERVAL_MS` | `30000` | How often to print stats |
-| `DEBUG` | `false` | Enable detailed logging |
+| Variable                | Default                  | Description                      |
+| ----------------------- | ------------------------ | -------------------------------- |
+| `WS_URL`                | `ws://localhost:8080/ws` | WebSocket server URL             |
+| `NUM_CLIENTS`           | `100`                    | Number of concurrent clients     |
+| `TEST_DURATION_MS`      | `300000`                 | Test duration (5 minutes)        |
+| `MAX_ANSWER_DELAY_MS`   | `1000`                   | Maximum delay before answering   |
+| `CONNECTION_STAGGER_MS` | `100`                    | Delay between connection batches |
+| `STATS_INTERVAL_MS`     | `30000`                  | How often to print stats         |
+| `DEBUG`                 | `false`                  | Enable detailed logging          |
 
 ## Usage Examples
 

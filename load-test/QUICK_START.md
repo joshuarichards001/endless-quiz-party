@@ -67,7 +67,7 @@ npm run debug      # 10 clients with detailed logging
 NUM_CLIENTS=200 npm start
 
 # Test remote server
-WS_URL=ws://your-server.com:8080/ws npm start
+WS_URL=wss://endless-quiz-server.fly.dev/ws npm start
 
 # Debug mode
 DEBUG=true npm start
