@@ -162,7 +162,7 @@ func (h *Hub) getLeaderboard() []LeaderboardEntry {
 		return clientStreaks[i].Streak > clientStreaks[j].Streak
 	})
 
-	maxEntries := min(len(clientStreaks), 5)
+	maxEntries := min(len(clientStreaks), 3)
 
 	for i := range maxEntries {
 		leaderboard = append(leaderboard, LeaderboardEntry{

@@ -12,29 +12,29 @@ function App() {
   });
 
   return (
-    <div class="h-full p-6 flex flex-col">
-      {quizStore.username && (
-        <div class="text-center mb-4">
-          <span class="text-lg font-semibold text-primary">
-            Username: {quizStore.username}!
-          </span>
-        </div>
-      )}
-      <Leaderboard />
-      <Question />
-      <div class="flex items-center justify-between mb-4">
-        <span class="badge badge-outline badge-accent">
-          {quizStore.currentStreak} <FlameIcon />
-        </span>
-        <span class="badge badge-outline badge-info">
-          {quizStore.userCount} <PersonIcon />
-        </span>
+    <div class="h-full px-6 flex flex-col justify-between">
+      <div class="flex flex-col">
+        <Leaderboard />
+        <Question />
       </div>
-      <div class="grid grid-cols-2 grid-rows-2 gap-2 max-h-60">
-        <QuizButton index={0} />
-        <QuizButton index={1} />
-        <QuizButton index={2} />
-        <QuizButton index={3} />
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="badge badge-outline badge-accent">
+            {quizStore.currentStreak} <FlameIcon />
+          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-info">{quizStore.username}</span>
+            <span class="badge badge-outline badge-info">
+              {quizStore.userCount} <PersonIcon />
+            </span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 grid-rows-2 gap-2 max-h-60">
+          <QuizButton index={0} />
+          <QuizButton index={1} />
+          <QuizButton index={2} />
+          <QuizButton index={3} />
+        </div>
       </div>
     </div>
   );

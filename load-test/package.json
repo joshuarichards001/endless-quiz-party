@@ -6,10 +6,10 @@
   "scripts": {
     "test": "node load-test.js",
     "start": "node load-test.js",
-    "light": "NUM_CLIENTS=10 TEST_DURATION_MS=60000 node load-test.js",
-    "medium": "NUM_CLIENTS=50 TEST_DURATION_MS=180000 node load-test.js",
+    "light": "NUM_CLIENTS=10 TEST_DURATION_MS=300000 node load-test.js",
+    "medium": "NUM_CLIENTS=50 TEST_DURATION_MS=300000 node load-test.js",
     "heavy": "NUM_CLIENTS=100 TEST_DURATION_MS=300000 node load-test.js",
-    "stress": "NUM_CLIENTS=500 TEST_DURATION_MS=600000 node load-test.js",
+    "stress": "NUM_CLIENTS=500 TEST_DURATION_MS=300000 node load-test.js",
     "debug": "DEBUG=true NUM_CLIENTS=10 node load-test.js",
     "help": "echo 'Available scripts:\n  npm run light   - 10 clients, 1 min\n  npm run medium  - 50 clients, 3 min\n  npm run heavy   - 100 clients, 5 min\n  npm run stress  - 500 clients, 10 min\n  npm run debug   - 10 clients with debug\n  npm start       - Default test (100 clients, 5 min)'"
   },
