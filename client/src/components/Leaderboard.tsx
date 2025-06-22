@@ -29,18 +29,14 @@ function TrophyIcon({ rank }: { rank: number }) {
 
 function Leaderboard() {
   return (
-    <div class="bg-base-200 rounded-lg p-4 mb-4">
-      <h3 class="text-lg font-bold text-center mb-3 text-primary">
-        🏆 Leaderboard
-      </h3>
+    <div class="bg-base-200 rounded-lg p-4 mb-2">
       <div>
         <For each={quizStore.leaderboard}>
           {(entry) => (
             <div class="flex items-center justify-between rounded-lg shadow-sm">
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1">
-                  <span class="font-bold text-accent">#{entry.rank}</span>
-                  {entry.rank <= 3 && <TrophyIcon rank={entry.rank} />}
+                  <TrophyIcon rank={entry.rank} />
                 </div>
                 <span class="font-medium text-base-content truncate max-w-40">
                   {entry.username}
