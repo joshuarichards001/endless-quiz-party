@@ -29,7 +29,8 @@ func websocketHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := NewClient(hub, conn, "Anonymous") // TODO: handle client name properly
+	username := GenerateRandomUsername()
+	client := NewClient(hub, conn, username)
 	hub.Register <- client
 
 	go client.ReadPump()

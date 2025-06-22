@@ -12,6 +12,13 @@ function App() {
 
   return (
     <div class="h-full p-6 flex flex-col">
+      {quizStore.username && (
+        <div class="text-center mb-4">
+          <span class="text-lg font-semibold text-primary">
+            Username: {quizStore.username}!
+          </span>
+        </div>
+      )}
       <Question />
       <div class="flex items-center justify-between mb-4">
         <span class="badge badge-outline badge-accent">

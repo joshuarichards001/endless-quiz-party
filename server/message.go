@@ -26,3 +26,8 @@ type UserCountUpdateMessage struct {
 	Type  string `json:"type"`
 	Count int    `json:"user_count"`
 }
+
+type WelcomeMessage struct {
+	Type     string `json:"type"`
+	Username string `json:"username"`
+}

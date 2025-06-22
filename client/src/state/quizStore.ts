@@ -8,6 +8,7 @@ export interface QuizState {
   userCount: number;
   submissionCount: number;
   correctAnswer: number | null;
+  username: string | null;
 }
 
 export const defaultQuizState: QuizState = {
@@ -18,6 +19,7 @@ export const defaultQuizState: QuizState = {
   userCount: 0,
   submissionCount: 0,
   correctAnswer: null,
+  username: null,
 };
 
 export const [quizStore, setQuizStore] =

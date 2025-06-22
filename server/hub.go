@@ -57,6 +57,14 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			h.Clients[client] = true
 			atomic.AddInt32(&h.UserCount, 1)
+
+			welcomeMessage := WelcomeMessage{
+				Type:     MessageTypeWelcome,
+				Username: client.Name,
+			}
+			welcomeBytes, _ := json.Marshal(welcomeMessage)
+			client.Send <- welcomeBytes
+
 			if h.QuizManager.IsQuestionActive {
 				questionMessage := QuestionMessage{
 					Type:      "question",

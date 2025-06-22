@@ -3,4 +3,5 @@ export enum WebSocketMessageType {
   AnswerResult = "answer_result",
   Question = "question",
   UserCount = "user_count",
+  Welcome = "welcome",
 }

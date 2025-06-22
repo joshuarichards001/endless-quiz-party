@@ -52,6 +52,10 @@ export function connectQuizWebSocket() {
       if (data.type === WebSocketMessageType.UserCount) {
         setQuizStore("userCount", data.user_count || 0);
       }
+
+      if (data.type === WebSocketMessageType.Welcome) {
+        setQuizStore("username", data.username);
+      }
     } catch (e) {
       console.error("WebSocket message error", e);
     }

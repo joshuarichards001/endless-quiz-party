@@ -5,4 +5,5 @@ const (
 	MessageTypeAnswerResult = "answer_result"
 	MessageTypeQuestion     = "question"
 	MessageTypeUserCount    = "user_count"
+	MessageTypeWelcome      = "welcome"
 )
