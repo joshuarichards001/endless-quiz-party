@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"sort"
 	"sync/atomic"
 	"time"
 )
@@ -106,16 +107,26 @@ func (h *Hub) Run() {
 				} else {
 					client.Streak = 0
 				}
+			}
 
+			userCount := int(atomic.LoadInt32(&h.UserCount))
+			leaderboard := h.getLeaderboard()
+
+			for client := range h.Clients {
 				answerResultMsg := AnswerResultMessage{
 					Type:              "answer_result",
 					CorrectAnswer:     results.Answer,
 					Votes:             results.Votes,
 					YourAnswerCorrect: client.CurrentAnswer == results.Answer,
 					CurrentStreak:     client.Streak,
-					UserCount:         int(atomic.LoadInt32(&h.UserCount)),
+					UserCount:         userCount,
+					Leaderboard:       leaderboard,
 				}
-				messageBytes, _ := json.Marshal(answerResultMsg)
+
+				messageBytes, err := json.Marshal(answerResultMsg)
+				if err != nil {
+					continue
+				}
 
 				select {
 				case client.Send <- messageBytes:
@@ -137,4 +148,40 @@ func (h *Hub) broadcastUserCount() {
 
 func (h *Hub) BroadcastMessage(message []byte) {
 	h.Broadcast <- message
+}
+
+func (h *Hub) getLeaderboard() []LeaderboardEntry {
+	type clientStreak struct {
+		client *Client
+		streak int
+	}
+
+	var clientStreaks []clientStreak
+	for client := range h.Clients {
+		clientStreaks = append(clientStreaks, clientStreak{
+			client: client,
+			streak: client.Streak,
+		})
+	}
+
+	sort.Slice(clientStreaks, func(i, j int) bool {
+		return clientStreaks[i].streak > clientStreaks[j].streak
+	})
+
+	var leaderboard []LeaderboardEntry
+	maxEntries := 5
+
+	if len(clientStreaks) < maxEntries {
+		maxEntries = len(clientStreaks)
+	}
+
+	for i := 0; i < maxEntries; i++ {
+		leaderboard = append(leaderboard, LeaderboardEntry{
+			Username: clientStreaks[i].client.Name,
+			Streak:   clientStreaks[i].streak,
+			Rank:     i + 1,
+		})
+	}
+
+	return leaderboard
 }

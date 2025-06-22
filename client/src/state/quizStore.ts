@@ -1,5 +1,11 @@
 import { createStore } from "solid-js/store";
 
+export interface LeaderboardEntry {
+  username: string;
+  streak: number;
+  rank: number;
+}
+
 export interface QuizState {
   currentAnswer: number | null;
   currentQuestion: string | null;
@@ -9,6 +15,7 @@ export interface QuizState {
   submissionCount: number;
   correctAnswer: number | null;
   username: string | null;
+  leaderboard: LeaderboardEntry[];
 }
 
 export const defaultQuizState: QuizState = {
@@ -20,6 +27,7 @@ export const defaultQuizState: QuizState = {
   submissionCount: 0,
   correctAnswer: null,
   username: null,
+  leaderboard: [],
 };
 
 export const [quizStore, setQuizStore] =

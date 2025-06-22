@@ -44,6 +44,7 @@ export function connectQuizWebSocket() {
           userCount: data.user_count,
           submissionCount: data.submission_count,
           correctAnswer: data.correct_answer,
+          leaderboard: data.leaderboard || [],
         };
         console.log("Received answer result:", updateState);
         setQuizStore(updateState);

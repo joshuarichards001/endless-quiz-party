@@ -13,13 +13,20 @@ type SubmitAnswerMessage struct {
 	Answer int    `json:"answer"`
 }
 
+type LeaderboardEntry struct {
+	Username string `json:"username"`
+	Streak   int    `json:"streak"`
+	Rank     int    `json:"rank"`
+}
+
 type AnswerResultMessage struct {
-	Type              string      `json:"type"`
-	CorrectAnswer     int         `json:"correct_answer"`
-	Votes             map[int]int `json:"votes"`
-	YourAnswerCorrect bool        `json:"your_answer_correct"`
-	CurrentStreak     int         `json:"current_streak"`
-	UserCount         int         `json:"user_count"`
+	Type              string             `json:"type"`
+	CorrectAnswer     int                `json:"correct_answer"`
+	Votes             map[int]int        `json:"votes"`
+	YourAnswerCorrect bool               `json:"your_answer_correct"`
+	CurrentStreak     int                `json:"current_streak"`
+	UserCount         int                `json:"user_count"`
+	Leaderboard       []LeaderboardEntry `json:"leaderboard"`
 }
 
 type UserCountUpdateMessage struct {

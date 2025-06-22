@@ -1,6 +1,7 @@
 import { onMount } from "solid-js";
 import QuizButton from "./components/Button";
 import { FlameIcon, PersonIcon } from "./components/Icons";
+import Leaderboard from "./components/Leaderboard";
 import Question from "./components/Question";
 import { connectQuizWebSocket } from "./helpers/websocket";
 import { quizStore } from "./state/quizStore";
@@ -19,6 +20,7 @@ function App() {
           </span>
         </div>
       )}
+      <Leaderboard />
       <Question />
       <div class="flex items-center justify-between mb-4">
         <span class="badge badge-outline badge-accent">
