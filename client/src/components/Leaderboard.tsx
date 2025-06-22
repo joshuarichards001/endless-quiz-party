@@ -36,7 +36,7 @@ function Leaderboard() {
       <div>
         <For each={quizStore.leaderboard}>
           {(entry) => (
-            <div class="flex items-center justify-between bg-base-100 rounded-lg shadow-sm">
+            <div class="flex items-center justify-between rounded-lg shadow-sm">
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1">
                   <span class="font-bold text-accent">#{entry.rank}</span>

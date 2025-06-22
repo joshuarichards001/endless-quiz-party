@@ -28,7 +28,7 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
           sendQuizAnswer(index);
         }}
       >
-        {quizStore.currentOptions![index]}
+        {quizStore.currentOptions![index]} {quizStore.votes[index] ? "(" + quizStore.votes[index] + ")" : ""}
       </button>
     </Show>
   );

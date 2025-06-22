@@ -12,7 +12,7 @@ export interface QuizState {
   currentOptions: string[] | null;
   currentStreak: number;
   userCount: number;
-  submissionCount: number;
+  votes: { [key: number]: number };
   correctAnswer: number | null;
   username: string | null;
   leaderboard: LeaderboardEntry[];
@@ -24,7 +24,7 @@ export const defaultQuizState: QuizState = {
   currentOptions: null,
   currentStreak: 0,
   userCount: 0,
-  submissionCount: 0,
+  votes: {},
   correctAnswer: null,
   username: null,
   leaderboard: [],

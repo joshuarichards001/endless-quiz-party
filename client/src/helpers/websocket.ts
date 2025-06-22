@@ -28,7 +28,7 @@ export function connectQuizWebSocket() {
           currentOptions: data.options,
           // currentStreak unchanged,
           userCount: data.user_count,
-          submissionCount: data.submission_count,
+          votes: {},
           correctAnswer: null,
         };
         console.log("Received question:", updateState);
@@ -42,7 +42,7 @@ export function connectQuizWebSocket() {
           // currentOptions unchanged,
           currentStreak: data.current_streak,
           userCount: data.user_count,
-          submissionCount: data.submission_count,
+          votes: data.votes,
           correctAnswer: data.correct_answer,
           leaderboard: data.leaderboard || [],
         };
