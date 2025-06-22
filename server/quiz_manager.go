@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-const questionTimerDuration = 8 * time.Second
-const answerTimerDuration = 2 * time.Second
+const questionTimerDuration = 10 * time.Second
+const answerTimerDuration = 4 * time.Second
 
 type Question struct {
 	Question string   `json:"question"`
