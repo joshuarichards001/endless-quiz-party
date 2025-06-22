@@ -15,7 +15,7 @@ var upgrader = websocket.Upgrader{
 		origin := r.Header.Get("Origin")
 		environment := os.Getenv("ENVIRONMENT")
 		if environment == "development" {
-			return origin == "http://localhost:3000"
+			return true
 		} else {
 			return origin == "https://endless-quiz-party.pages.dev"
 		}
