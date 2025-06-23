@@ -17,7 +17,7 @@ var upgrader = websocket.Upgrader{
 		if environment == "development" {
 			return true
 		} else {
-			return origin == "https://endless-quiz-party.pages.dev"
+			return origin == "https://endlessquiz.party"
 		}
 	},
 }
