@@ -15,7 +15,7 @@ const Question: Component<{}> = (props) => {
   });
 
   return (
-    <div class="flex w-full max-w-md items-center mb-12 relative">
+    <div class="flex w-full max-w-md items-center mb-2 relative">
       <p class="text-7xl -scale-x-100">🐴</p>
       <div class="flex items-center w-full">
         <div class="h-0 w-0 z-10 border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent border-r-[12px] border-r-accent"></div>
