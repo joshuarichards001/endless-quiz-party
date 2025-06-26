@@ -5,9 +5,12 @@ import (
 	"net/http"
 )
 
+var rateLimiter *RateLimiter
+
 func main() {
 	loadEnv()
 
+	rateLimiter = NewRateLimiter()
 	hub := NewHub(nil)
 	quizManager := NewQuizManager(hub, fetchQuestion)
 	hub.QuizManager = quizManager
