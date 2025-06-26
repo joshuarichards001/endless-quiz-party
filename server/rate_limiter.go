@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"os"
 	"sync"
 	"time"
 )
@@ -29,6 +30,10 @@ func NewRateLimiter() *RateLimiter {
 }
 
 func (rl *RateLimiter) AllowConnection(remoteAddr string) bool {
+	if isDevelopmentMode() {
+		return true
+	}
+
 	ip := getIPFromAddr(remoteAddr)
 	if ip == "" {
 		return false
@@ -69,6 +74,10 @@ func (rl *RateLimiter) RemoveConnection(remoteAddr string) {
 }
 
 func (rl *RateLimiter) AllowMessage(remoteAddr string) bool {
+	if isDevelopmentMode() {
+		return true
+	}
+
 	ip := getIPFromAddr(remoteAddr)
 	if ip == "" {
 		return false
@@ -136,4 +145,8 @@ func getIPFromAddr(remoteAddr string) string {
 		return ""
 	}
 	return ip
+}
+
+func isDevelopmentMode() bool {
+	return os.Getenv("ENVIRONMENT") == "development"
 }
