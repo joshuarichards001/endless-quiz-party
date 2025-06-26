@@ -16,6 +16,7 @@ export interface QuizState {
   correctAnswer: number | null;
   username: string | null;
   leaderboard: LeaderboardEntry[];
+  initialTimeLeft: number | null;
 }
 
 export const defaultQuizState: QuizState = {
@@ -28,6 +29,7 @@ export const defaultQuizState: QuizState = {
   correctAnswer: null,
   username: null,
   leaderboard: [],
+  initialTimeLeft: null,
 };
 
 export const [quizStore, setQuizStore] =

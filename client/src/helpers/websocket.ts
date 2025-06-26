@@ -30,6 +30,7 @@ export function connectQuizWebSocket() {
           userCount: data.user_count,
           votes: {},
           correctAnswer: null,
+          initialTimeLeft: data.time_left || null,
         };
         console.log("Received question:", updateState);
         setQuizStore(updateState);
@@ -45,6 +46,7 @@ export function connectQuizWebSocket() {
           votes: data.votes,
           correctAnswer: data.correct_answer,
           leaderboard: data.leaderboard || [],
+          initialTimeLeft: 0,
         };
         console.log("Received answer result:", updateState);
         setQuizStore(updateState);

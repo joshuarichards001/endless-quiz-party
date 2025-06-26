@@ -1,4 +1,5 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
+import { quizStore } from "../state/quizStore";
 
 interface TimerProps {
   duration: number;
@@ -17,7 +18,8 @@ const Timer = (props: TimerProps) => {
     if (!startTime) startTime = currentTime;
 
     const elapsed = (currentTime - startTime) / 1000;
-    const remaining = Math.max(0, props.duration - elapsed);
+    const effectiveDuration = quizStore.initialTimeLeft ?? props.duration;
+    const remaining = Math.max(0, effectiveDuration - elapsed);
     const progressValue = remaining / props.duration;
 
     setProgress(progressValue);
@@ -32,8 +34,9 @@ const Timer = (props: TimerProps) => {
     if (props.trigger && props.trigger !== lastTrigger) {
       lastTrigger = props.trigger;
       startTime = undefined;
-      setProgress(1);
-      setTimeLeft(props.duration);
+      const initialTime = quizStore.initialTimeLeft ?? props.duration;
+      setProgress(initialTime / props.duration);
+      setTimeLeft(initialTime);
 
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
