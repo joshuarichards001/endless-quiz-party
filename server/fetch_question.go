@@ -37,26 +37,25 @@ func fetchQuestion(hub *Hub) (*Question, error) {
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 
-	var apiResp struct {
-		ResponseCode int `json:"response_code"`
-		Results      []struct {
-			Question         string   `json:"question"`
-			CorrectAnswer    string   `json:"correct_answer"`
-			IncorrectAnswers []string `json:"incorrect_answers"`
-		} `json:"results"`
+	var apiResp []struct {
+		CorrectAnswer    string   `json:"correctAnswer"`
+		IncorrectAnswers []string `json:"incorrectAnswers"`
+		Question         struct {
+			Text string `json:"text"`
+		} `json:"question"`
 	}
 	err = json.Unmarshal(body, &apiResp)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse question JSON: %v", err)
 	}
 
-	if len(apiResp.Results) == 0 {
+	if len(apiResp) == 0 {
 		return nil, fmt.Errorf("no results found in trivia API response")
 	}
 
-	result := apiResp.Results[0]
+	result := apiResp[0]
 
-	decodedQuestion := html.UnescapeString(result.Question)
+	decodedQuestion := html.UnescapeString(result.Question.Text)
 	decodedCorrectAnswer := html.UnescapeString(result.CorrectAnswer)
 	decodedIncorrectAnswers := make([]string, len(result.IncorrectAnswers))
 	for i, incorrectAnswer := range result.IncorrectAnswers {
