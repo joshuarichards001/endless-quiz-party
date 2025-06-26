@@ -19,26 +19,28 @@ type ProcessResultsRequest struct {
 }
 
 type Hub struct {
-	Clients        map[*Client]bool
-	Broadcast      chan []byte
-	Register       chan *Client
-	Unregister     chan *Client
-	ProcessAnswer  chan UserAnswer
-	ProcessResults chan ProcessResultsRequest
-	QuizManager    *QuizManager
-	UserCount      int32
+	Clients         map[*Client]bool
+	Broadcast       chan []byte
+	Register        chan *Client
+	Unregister      chan *Client
+	ProcessAnswer   chan UserAnswer
+	ProcessResults  chan ProcessResultsRequest
+	QuizManager     *QuizManager
+	UserCount       int32
+	LastLeaderboard []LeaderboardEntry
 }
 
 func NewHub(quizManager *QuizManager) *Hub {
 	return &Hub{
-		Clients:        make(map[*Client]bool),
-		Broadcast:      make(chan []byte, 512),
-		Register:       make(chan *Client),
-		Unregister:     make(chan *Client),
-		ProcessAnswer:  make(chan UserAnswer),
-		ProcessResults: make(chan ProcessResultsRequest),
-		QuizManager:    quizManager,
-		UserCount:      0,
+		Clients:         make(map[*Client]bool),
+		Broadcast:       make(chan []byte, 512),
+		Register:        make(chan *Client),
+		Unregister:      make(chan *Client),
+		ProcessAnswer:   make(chan UserAnswer),
+		ProcessResults:  make(chan ProcessResultsRequest),
+		QuizManager:     quizManager,
+		UserCount:       0,
+		LastLeaderboard: []LeaderboardEntry{},
 	}
 }
 
@@ -68,11 +70,12 @@ func (h *Hub) Run() {
 
 			if h.QuizManager.IsQuestionActive {
 				questionMessage := QuestionMessage{
-					Type:      "question",
-					Question:  h.QuizManager.CurrentQuestion.Question,
-					Options:   h.QuizManager.CurrentQuestion.Options,
-					TimeLeft:  int(time.Until(h.QuizManager.QuestionEndTime).Seconds()),
-					UserCount: int(atomic.LoadInt32(&h.UserCount)),
+					Type:        "question",
+					Question:    h.QuizManager.CurrentQuestion.Question,
+					Options:     h.QuizManager.CurrentQuestion.Options,
+					TimeLeft:    int(time.Until(h.QuizManager.QuestionEndTime).Seconds()),
+					UserCount:   int(atomic.LoadInt32(&h.UserCount)),
+					Leaderboard: h.LastLeaderboard,
 				}
 				messageBytes, _ := json.Marshal(questionMessage)
 				client.Send <- messageBytes
@@ -84,6 +87,7 @@ func (h *Hub) Run() {
 					YourAnswerCorrect: false,
 					CurrentStreak:     0,
 					UserCount:         int(atomic.LoadInt32(&h.UserCount)),
+					Leaderboard:       h.LastLeaderboard,
 				}
 				messageBytes, _ := json.Marshal(answerResultMsg)
 				client.Send <- messageBytes
@@ -111,6 +115,7 @@ func (h *Hub) Run() {
 
 			userCount := int(atomic.LoadInt32(&h.UserCount))
 			leaderboard := h.getLeaderboard()
+			h.LastLeaderboard = leaderboard
 
 			for client := range h.Clients {
 				answerResultMsg := AnswerResultMessage{
@@ -153,7 +158,7 @@ func (h *Hub) BroadcastMessage(message []byte) {
 func (h *Hub) getLeaderboard() []LeaderboardEntry {
 	var leaderboard []LeaderboardEntry
 	clientStreaks := make([]*Client, 0, len(h.Clients))
-	
+
 	for client := range h.Clients {
 		clientStreaks = append(clientStreaks, client)
 	}

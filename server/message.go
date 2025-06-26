@@ -6,6 +6,7 @@ type QuestionMessage struct {
 	Options   []string `json:"options"`
 	TimeLeft  int      `json:"time_left"`
 	UserCount int      `json:"user_count"`
+	Leaderboard []LeaderboardEntry `json:"leaderboard"`
 }
 
 type SubmitAnswerMessage struct {
