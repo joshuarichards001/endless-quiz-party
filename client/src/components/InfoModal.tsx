@@ -10,7 +10,7 @@ const InfoModal: Component<{}> = (props) => {
             ✕
           </button>
         </form>
-        <h3 class="text-lg font-bold">Welcome to Endless Quiz!</h3>
+        <h3 class="text-lg font-bold">Welcome to the Endless Quiz Party!</h3>
         <p class="py-4">
           This is a little internet experient I wanted to do, I hope you like
           it!
