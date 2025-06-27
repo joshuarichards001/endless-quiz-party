@@ -47,7 +47,10 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
           transition-transform duration-200
         `}
         onClick={() => {
-          if (quizStore.currentAnswer !== null) {
+          if (
+            quizStore.currentAnswer !== null ||
+            quizStore.correctAnswer !== null
+          ) {
             return;
           }
 
