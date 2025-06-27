@@ -29,7 +29,7 @@ function TrophyIcon({ rank }: { rank: number }) {
 
 function Leaderboard() {
   return (
-    <div class="bg-base-300 rounded-lg p-4 mb-2">
+    <div class="bg-base-300 rounded-lg p-4 mb-4 border-1 border-base-content/20">
       <div>
         <For each={quizStore.leaderboard}>
           {(entry) => (

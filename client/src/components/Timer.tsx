@@ -61,7 +61,7 @@ const Timer = (props: TimerProps) => {
   return (
     <svg height="40" width="40">
       <circle
-        stroke="oklch(82.3% 0.12 346.018)"
+        stroke="oklch(89.9% 0.061 343.231)"
         fill="transparent"
         stroke-width={stroke}
         r={normalizedRadius}
