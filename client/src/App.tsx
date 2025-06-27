@@ -1,6 +1,7 @@
 import { onMount } from "solid-js";
 import QuizButton from "./components/Button";
 import { FlameIcon, PersonIcon } from "./components/Icons";
+import InfoModal from "./components/InfoModal";
 import Leaderboard from "./components/Leaderboard";
 import Question from "./components/Question";
 import { connectQuizWebSocket } from "./helpers/websocket";
@@ -34,6 +35,7 @@ function App() {
           <QuizButton index={3} />
         </div>
       </div>
+      <InfoModal />
     </div>
   );
 }

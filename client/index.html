@@ -1,43 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="night">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <link rel="icon" href="quiz-icon.png" />
-    <link rel="apple-touch-icon" href="quiz-icon.png" />
-    <script defer data-domain="endlessquiz.party" src="https://plausible.io/js/script.js"></script>
-    <title>Endless Quiz Party</title>
-    <meta
-      name="description"
-      content="Endless Quiz Party is a real time quiz where you go head to head with the open internet to see who can get the longest correct answer streak"
-    />
-  </head>
-  <body>
-    <header>
-      <h1>Endless Quiz Party</h1>
-    </header>
-    <main>
-      <div id="root"></div>
-    </main>
-    <script src="/src/index.tsx" type="module"></script>
-  </body>
-  <style>
-    header {
-      text-align: center;
-      font-family: "Arial", sans-serif;
-      font-weight: bold;
-      padding-top: 20px;
-    }
-    h1 {
-      font-size: 2rem;
-    }
-    main,
-    #root {
-      width: 100%;
-      height: calc(100vh - 200px);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-  </style>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="quiz-icon.png" />
+        <link rel="apple-touch-icon" href="quiz-icon.png" />
+        <script
+            defer
+            data-domain="endlessquiz.party"
+            src="https://plausible.io/js/script.js"
+        ></script>
+        <title>Endless Quiz Party</title>
+        <meta
+            name="description"
+            content="Endless Quiz Party is a real time quiz where you go head to head with the open internet to see who can get the longest correct answer streak"
+        />
+    </head>
+    <body>
+        <header>
+            <h1>Endless Quiz Party</h1>
+            <button class="btn" onclick="info_modal.showModal()">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="#c9cbd0"
+                >
+                    <path
+                        d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z"
+                    />
+                </svg>
+            </button>
+        </header>
+        <main>
+            <div id="root"></div>
+        </main>
+        <script src="/src/index.tsx" type="module"></script>
+    </body>
+    <style>
+        header {
+            text-align: center;
+            font-family: "Arial", sans-serif;
+            font-weight: bold;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            font-size: 2rem;
+        }
+        main,
+        #root {
+            width: 100%;
+            height: calc(100vh - 200px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
 </html>
