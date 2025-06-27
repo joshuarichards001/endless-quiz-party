@@ -27,11 +27,11 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
     if (!text) return "text-sm";
 
     const textLength = text.length;
-    if (textLength <= 15) return "text-lg";
-    if (textLength <= 30) return "text-base";
-    if (textLength <= 50) return "text-sm";
-    if (textLength <= 75) return "text-xs";
-    return "text-xxs";
+    if (textLength <= 30) return "text-lg";
+    if (textLength <= 45) return "text-base";
+    if (textLength <= 70) return "text-sm";
+    if (textLength <= 90) return "text-xs";
+    return "text-[10px]";
   };
 
   return (
