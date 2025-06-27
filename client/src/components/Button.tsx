@@ -27,9 +27,10 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
         class={`aspect-square ${buttonColor()} border-b-4 font-bold rounded-2xl w-full h-full flex flex-col items-center justify-center overflow-hidden p-2
           ${
             quizStore.currentAnswer === index
-              ? "ring-4 ring-offset-2 ring-white ring-opacity-80 scale-105"
+              ? "ring-2 ring-offset-2 ring-white ring-opacity-80"
               : ""
           }
+          transition-transform duration-150 active:scale-95
         `}
         onClick={() => {
           if (quizStore.currentAnswer !== null) {
