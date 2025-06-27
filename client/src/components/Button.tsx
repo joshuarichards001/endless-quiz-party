@@ -21,6 +21,18 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
     return Math.round((votes / totalVotes()) * 100);
   };
 
+  const getTextSize = () => {
+    const text = quizStore.currentOptions![index];
+    if (!text) return "text-sm";
+
+    const textLength = text.length;
+    if (textLength <= 15) return "text-lg";
+    if (textLength <= 30) return "text-base";
+    if (textLength <= 50) return "text-sm";
+    if (textLength <= 75) return "text-xs";
+    return "text-xxs";
+  };
+
   return (
     <Show when={quizStore.currentOptions}>
       <button
@@ -40,7 +52,9 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
           sendQuizAnswer(index);
         }}
       >
-        <div class="text-center font-bold text-sm leading-tight break-words mb-2">
+        <div
+          class={`text-center font-bold ${getTextSize()} leading-tight break-words mb-2`}
+        >
           {quizStore.currentOptions![index]}
         </div>
 
