@@ -29,7 +29,7 @@ function App() {
             </span>
           </div>
         </div>
-        <div class="grid grid-cols-2 grid-rows-2 gap-2 max-h-60">
+        <div class="grid grid-cols-2 grid-rows-2 gap-3 h-60">
           <QuizButton index={0} />
           <QuizButton index={1} />
           <QuizButton index={2} />

@@ -10,7 +10,8 @@ interface Props {
 const QuizButton: Component<Props> = ({ index }: Props) => {
   const buttonColor = () => getButtonColor(index, quizStore.correctAnswer);
 
-  const totalVotes = () => Object.values(quizStore.votes).reduce((a, b) => a + b, 0);
+  const totalVotes = () =>
+    Object.values(quizStore.votes).reduce((a, b) => a + b, 0);
 
   const votePercentage = () => {
     const votes = quizStore.votes[index];
@@ -23,10 +24,10 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
   return (
     <Show when={quizStore.currentOptions}>
       <button
-        class={`aspect-square ${buttonColor()} border-b-4 font-bold rounded w-full h-full flex flex-col items-center justify-center text-l
+        class={`aspect-square ${buttonColor()} border-b-4 font-bold rounded-xl w-full h-full flex flex-col items-center justify-center overflow-hidden
       ${
         quizStore.currentAnswer === index
-          ? "ring-4 ring-offset-2 ring-indigo-500"
+          ? "ring-4 ring-offset-2 ring-white ring-opacity-80"
           : ""
       }
       `}
@@ -38,9 +39,12 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
           sendQuizAnswer(index);
         }}
       >
-        <div>{quizStore.currentOptions![index]}</div>
+        <div class="text-center font-bold text-sm leading-tight break-words mb-2">
+          {quizStore.currentOptions![index]}
+        </div>
+
         <Show when={quizStore.correctAnswer !== null}>
-          <div class="text-sm font-normal">
+          <div class="text-xs font-semibold bg-black bg-opacity-80 text-white px-2 py-1 rounded-full border border-gray-400">
             {votePercentage()}% ({quizStore.votes[index] || 0})
           </div>
         </Show>
