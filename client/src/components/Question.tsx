@@ -34,7 +34,7 @@ const Question: Component<{}> = (props) => {
         <div class="p-4 w-full bg-accent border-pink-700 border-b-4 text-accent-content shadow-lg rounded-xl relative">
           {quizStore.currentQuestion && (
             <div style="float: right; margin-left: 4px; margin-bottom: 4px; width: 40px; height: 40px;">
-              <Timer duration={10} trigger={quizStore.currentQuestion} />
+              <Timer duration={12} trigger={quizStore.currentQuestion} />
             </div>
           )}
           <p class={`${getTextSize()} break-words`}>

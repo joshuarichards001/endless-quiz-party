@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const questionTimerDuration = 10 * time.Second
+const questionTimerDuration = 12 * time.Second
 const answerTimerDuration = 4 * time.Second
 
 type Question struct {
