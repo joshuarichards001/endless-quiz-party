@@ -44,7 +44,7 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
               : ""
           }
           ${isPressed() ? "scale-95" : "scale-100"}
-          transition-transform duration-100
+          transition-transform duration-200
         `}
         onClick={() => {
           if (quizStore.currentAnswer !== null) {
