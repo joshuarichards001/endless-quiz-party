@@ -3,7 +3,7 @@ import { CodeIcon, HeartIcon, PersonIcon } from "./Icons";
 
 const InfoModal: Component<{}> = (props) => {
   return (
-    <dialog id="info_modal" class="modal">
+    <dialog id="info_modal" class="modal backdrop-brightness-40">
       <div class="modal-box">
         <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
