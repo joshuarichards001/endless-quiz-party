@@ -1,4 +1,4 @@
-import { Component, Show } from "solid-js";
+import { Component, Show, createSignal } from "solid-js";
 import { getButtonColor } from "../helpers/functions";
 import { sendQuizAnswer } from "../helpers/websocket";
 import { quizStore } from "../state/quizStore";
@@ -8,6 +8,7 @@ interface Props {
 }
 
 const QuizButton: Component<Props> = ({ index }: Props) => {
+  const [isPressed, setIsPressed] = createSignal(false);
   const buttonColor = () => getButtonColor(index, quizStore.correctAnswer);
 
   const totalVotes = () =>
@@ -42,7 +43,8 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
               ? "ring-2 ring-offset-2 ring-white ring-opacity-80"
               : ""
           }
-          touch-manipulation transition-transform duration-100 active:scale-95
+          ${isPressed() ? "scale-95" : "scale-100"}
+          transition-transform duration-100
         `}
         onClick={() => {
           if (quizStore.currentAnswer !== null) {
@@ -51,6 +53,12 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
 
           sendQuizAnswer(index);
         }}
+        onTouchStart={() => setIsPressed(true)}
+        onTouchEnd={() => setIsPressed(false)}
+        onTouchCancel={() => setIsPressed(false)}
+        onMouseDown={() => setIsPressed(true)}
+        onMouseUp={() => setIsPressed(false)}
+        onMouseLeave={() => setIsPressed(false)}
       >
         <div
           class={`text-center font-bold ${getTextSize()} leading-tight break-words mb-2`}
