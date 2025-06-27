@@ -61,7 +61,7 @@ const Timer = (props: TimerProps) => {
   return (
     <svg height="40" width="40">
       <circle
-        stroke="#999"
+        stroke="oklch(82.3% 0.12 346.018)"
         fill="transparent"
         stroke-width={stroke}
         r={normalizedRadius}
@@ -69,7 +69,7 @@ const Timer = (props: TimerProps) => {
         cy="20"
       />
       <circle
-        stroke="#000"
+        stroke="oklch(28.4% 0.109 3.907)"
         fill="transparent"
         stroke-width={stroke}
         stroke-linecap="round"
@@ -86,7 +86,7 @@ const Timer = (props: TimerProps) => {
         text-anchor="middle"
         dominant-baseline="middle"
         font-size="1.1em"
-        fill="#000"
+        fill="oklch(28.4% 0.109 3.907)"
         font-weight="bold"
       >
         {timeLeft()}

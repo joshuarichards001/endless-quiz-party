@@ -38,7 +38,7 @@ function Leaderboard() {
                 <div class="flex items-center gap-1">
                   <TrophyIcon rank={entry.rank} />
                 </div>
-                <span class="font-medium text-base-content truncate max-w-40">
+                <span class={`font-medium text-base-content truncate max-w-40 ${entry.username === quizStore.username ? 'text-primary' : ''}`}>
                   {entry.username}
                 </span>
               </div>

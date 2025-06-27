@@ -22,12 +22,10 @@ function App() {
           <span class="badge badge-outline badge-accent">
             {quizStore.currentStreak} <FlameIcon />
           </span>
-          <div class="flex items-center gap-2">
-            <span class="text-info">{quizStore.username}</span>
-            <span class="badge badge-outline badge-info">
-              {quizStore.userCount} <PersonIcon />
-            </span>
-          </div>
+          <span class="badge badge-primary">{quizStore.username}</span>
+          <span class="badge badge-outline badge-info">
+            {quizStore.userCount} <PersonIcon />
+          </span>
         </div>
         <div class="grid grid-cols-2 grid-rows-2 gap-3 h-60">
           <QuizButton index={0} />
