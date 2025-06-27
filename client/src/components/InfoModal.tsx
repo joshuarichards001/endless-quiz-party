@@ -1,4 +1,5 @@
 import { Component } from "solid-js";
+import { CodeIcon, HeartIcon, PersonIcon } from "./Icons";
 
 const InfoModal: Component<{}> = (props) => {
   return (
@@ -15,7 +16,8 @@ const InfoModal: Component<{}> = (props) => {
           it!
         </p>
         <ul class="list-disc list-inside py-2">
-          <li>
+          <li class="flex items-center gap-2">
+            <HeartIcon />
             Support the project{" "}
             <a
               class="link link-primary"
@@ -26,7 +28,8 @@ const InfoModal: Component<{}> = (props) => {
               here
             </a>
           </li>
-          <li>
+          <li class="flex items-center gap-2">
+            <CodeIcon />
             Check out the source code{" "}
             <a
               class="link link-primary"
@@ -37,7 +40,8 @@ const InfoModal: Component<{}> = (props) => {
               here
             </a>
           </li>
-          <li>
+          <li class="flex items-center gap-2">
+            <PersonIcon />
             Built by{" "}
             <a
               class="link link-primary"
