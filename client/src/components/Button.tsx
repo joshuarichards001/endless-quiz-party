@@ -24,13 +24,13 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
   return (
     <Show when={quizStore.currentOptions}>
       <button
-        class={`aspect-square ${buttonColor()} border-b-4 font-bold rounded-xl w-full h-full flex flex-col items-center justify-center overflow-hidden
-      ${
-        quizStore.currentAnswer === index
-          ? "ring-4 ring-offset-2 ring-white ring-opacity-80"
-          : ""
-      }
-      `}
+        class={`aspect-square ${buttonColor()} border-b-4 font-bold rounded-2xl w-full h-full flex flex-col items-center justify-center overflow-hidden
+          ${
+            quizStore.currentAnswer === index
+              ? "ring-4 ring-offset-2 ring-white ring-opacity-80 scale-105"
+              : ""
+          }
+        `}
         onClick={() => {
           if (quizStore.currentAnswer !== null) {
             return;
