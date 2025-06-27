@@ -5,6 +5,18 @@ import Timer from "./Timer";
 const Question: Component<{}> = (props) => {
   let lastQuestion: string | null = null;
 
+  const getTextSize = () => {
+    const text = quizStore.currentQuestion;
+    if (!text) return "text-xl";
+
+    const textLength = text.length;
+    if (textLength <= 100) return "text-xl";
+    if (textLength <= 150) return "text-lg";
+    if (textLength <= 200) return "text-base";
+    if (textLength <= 250) return "text-sm";
+    return "text-xs";
+  };
+
   createEffect(() => {
     if (
       quizStore.currentQuestion &&
@@ -25,7 +37,7 @@ const Question: Component<{}> = (props) => {
               <Timer duration={10} trigger={quizStore.currentQuestion} />
             </div>
           )}
-          <p class="text-xl break-words">
+          <p class={`${getTextSize()} break-words`}>
             {quizStore.currentQuestion || "Waiting for question..."}
           </p>
         </div>
