@@ -42,7 +42,7 @@ const QuizButton: Component<Props> = ({ index }: Props) => {
               ? "ring-2 ring-offset-2 ring-white ring-opacity-80"
               : ""
           }
-          transition-transform duration-150 active:scale-95
+          touch-manipulation transition-transform duration-100 active:scale-95
         `}
         onClick={() => {
           if (quizStore.currentAnswer !== null) {
