@@ -10,10 +10,10 @@ const Question: Component<{}> = (props) => {
     if (!text) return "text-xl";
 
     const textLength = text.length;
-    if (textLength <= 120) return "text-xl";
-    if (textLength <= 140) return "text-lg";
-    if (textLength <= 200) return "text-base";
-    if (textLength <= 250) return "text-sm";
+    if (textLength <= 100) return "text-xl";
+    if (textLength <= 130) return "text-lg";
+    if (textLength <= 180) return "text-base";
+    if (textLength <= 230) return "text-sm";
     return "text-xs";
   };
 
