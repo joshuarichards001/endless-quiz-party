@@ -20,6 +20,8 @@ const InfoModal: Component<{}> = (props) => {
             <a
               class="link link-primary"
               href="https://buymeacoffee.com/joshuarichards"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               here
             </a>
@@ -29,13 +31,20 @@ const InfoModal: Component<{}> = (props) => {
             <a
               class="link link-primary"
               href="https://github.com/joshuarichards001/endless-quiz-party"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               here
             </a>
           </li>
           <li>
             Built by{" "}
-            <a class="link link-primary" href="https://josh.work">
+            <a
+              class="link link-primary"
+              href="https://josh.work"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Josh
             </a>
           </li>
