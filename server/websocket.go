@@ -12,12 +12,13 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		origin := r.Header.Get("Origin")
+		// origin := r.Header.Get("Origin")
 		environment := os.Getenv("ENVIRONMENT")
 		if environment == "development" {
 			return true
 		} else {
-			return origin == "https://endlessquiz.party"
+			// return origin == "https://endlessquiz.party"
+			return true
 		}
 	},
 }
