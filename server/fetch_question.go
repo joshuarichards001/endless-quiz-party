@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"time"
 )
 
 func getTriviaApiUrl() (string, error) {
@@ -24,7 +25,9 @@ func fetchQuestion(hub *Hub) (*Question, error) {
 		return nil, err
 	}
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
 	req, err := http.NewRequest("GET", triviaApiUrl, nil)
 	if err != nil {
 		return nil, err

@@ -29,7 +29,7 @@ func NewClient(hub *Hub, conn *websocket.Conn, name string, remoteAddr string) *
 	return &Client{
 		Hub:           hub,
 		Conn:          conn,
-		Send:          make(chan []byte, 256),
+		Send:          make(chan []byte, 32),
 		Name:          name,
 		CurrentAnswer: -1,
 		Streak:        0,
@@ -67,9 +67,15 @@ func (c *Client) ReadPump() {
 		var incomingMessage SubmitAnswerMessage
 		if err := json.Unmarshal(message, &incomingMessage); err != nil {
 			log.Println("Client - Error unmarshaling message:", err, "Raw message:", string(message))
+			continue
 		}
 
 		if incomingMessage.Type == MessageTypeSubmitAnswer {
+			if incomingMessage.Answer < 0 || incomingMessage.Answer > 3 {
+				log.Printf("Client - Invalid answer from %s: %d", c.Name, incomingMessage.Answer)
+				continue
+			}
+
 			userAnswer := UserAnswer{
 				Client: c,
 				Answer: incomingMessage.Answer,

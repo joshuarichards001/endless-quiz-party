@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"sort"
 	"sync/atomic"
 	"time"
@@ -51,9 +52,11 @@ func (h *Hub) Run() {
 			for client := range h.Clients {
 				select {
 				case client.Send <- message:
-				default:
+				case <-time.After(100 * time.Millisecond):
+					log.Printf("Hub - Disconnecting slow client: %s", client.Name)
 					close(client.Send)
 					delete(h.Clients, client)
+					atomic.AddInt32(&h.UserCount, -1)
 				}
 			}
 
@@ -135,20 +138,16 @@ func (h *Hub) Run() {
 
 				select {
 				case client.Send <- messageBytes:
-				default:
+				case <-time.After(100 * time.Millisecond):
+					log.Printf("Hub - Disconnecting slow client during results: %s", client.Name)
 					close(client.Send)
 					delete(h.Clients, client)
+					atomic.AddInt32(&h.UserCount, -1)
 				}
 				client.CurrentAnswer = -1
 			}
 		}
 	}
-}
-
-func (h *Hub) broadcastUserCount() {
-	countMsg := UserCountUpdateMessage{Type: "user_count", Count: int(atomic.LoadInt32(&h.UserCount))}
-	msgBytes, _ := json.Marshal(countMsg)
-	h.Broadcast <- msgBytes
 }
 
 func (h *Hub) BroadcastMessage(message []byte) {
