@@ -4,9 +4,9 @@ import { CodeIcon, HeartIcon, PersonIcon } from "./Icons";
 const InfoModal: Component<{}> = (props) => {
   return (
     <dialog id="info_modal" class="modal backdrop-brightness-40">
-      <div class="modal-box">
+      <div class="modal-box border-2 border-base-content/40">
         <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+          <button class="btn btn-sm btn-circle btn-ghost absolute text-lg right-1 top-1">
             ✕
           </button>
         </form>
