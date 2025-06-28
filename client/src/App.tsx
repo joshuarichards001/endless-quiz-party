@@ -28,7 +28,7 @@ function App() {
             {quizStore.userCount} <PersonIcon />
           </span>
         </div>
-        <div class="grid grid-cols-2 grid-rows-2 gap-3 h-60">
+        <div class="grid grid-cols-2 grid-rows-2 gap-3 h-60 mb-4">
           <QuizButton index={0} />
           <QuizButton index={1} />
           <QuizButton index={2} />

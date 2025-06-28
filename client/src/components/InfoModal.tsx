@@ -12,7 +12,7 @@ const InfoModal: Component<{}> = (props) => {
         </form>
         <h3 class="text-lg font-bold">Welcome to the Endless Quiz Party!</h3>
         <p class="py-4">
-          This is a little internet experient I wanted to do, I hope you like
+          This is a little internet experient I wanted to do. I hope you like
           it!
         </p>
         <ul class="list-disc list-inside py-2">
