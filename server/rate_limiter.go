@@ -23,8 +23,8 @@ func NewRateLimiter() *RateLimiter {
 		connections:         make(map[string]int),
 		messageTimings:      make(map[string][]time.Time),
 		lastCleanup:         time.Now(),
-		maxConnectionsPerIP: 3,
-		maxMessagesPerMin:   20,
+		maxConnectionsPerIP: 5,
+		maxMessagesPerMin:   30,
 		cleanupInterval:     5 * time.Minute,
 	}
 }
