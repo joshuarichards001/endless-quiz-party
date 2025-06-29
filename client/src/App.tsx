@@ -1,5 +1,6 @@
 import { onMount } from "solid-js";
 import QuizButton from "./components/Button";
+import ConnectionError from "./components/ConnectionError";
 import { FlameIcon, PersonIcon } from "./components/Icons";
 import InfoModal from "./components/InfoModal";
 import Leaderboard from "./components/Leaderboard";
@@ -36,6 +37,7 @@ function App() {
         </div>
       </div>
       <InfoModal />
+      <ConnectionError />
     </div>
   );
 }

@@ -17,6 +17,9 @@ export interface QuizState {
   username: string | null;
   leaderboard: LeaderboardEntry[];
   initialTimeLeft: number | null;
+  isConnected: boolean;
+  connectionError: boolean;
+  errorMessage: string | null;
 }
 
 export const defaultQuizState: QuizState = {
@@ -30,6 +33,9 @@ export const defaultQuizState: QuizState = {
   username: null,
   leaderboard: [],
   initialTimeLeft: null,
+  isConnected: false,
+  connectionError: false,
+  errorMessage: null,
 };
 
 export const [quizStore, setQuizStore] =

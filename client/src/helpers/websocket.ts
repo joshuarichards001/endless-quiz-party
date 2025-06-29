@@ -12,10 +12,22 @@ export function connectQuizWebSocket() {
     return;
   }
 
+  // Reset store state
+  setQuizStore({
+    isConnected: false,
+    connectionError: false,
+    errorMessage: null,
+  });
+
   socket = new WebSocket(import.meta.env.VITE_SERVER_URL);
 
   socket.onopen = () => {
     console.log("WebSocket connected");
+    setQuizStore({
+      isConnected: true,
+      connectionError: false,
+      errorMessage: null,
+    });
   };
 
   socket.onmessage = (event) => {
@@ -68,8 +80,23 @@ export function connectQuizWebSocket() {
   };
 
   socket.onclose = () => {
-    console.log("WebSocket closed, reconnecting in 1s");
-    setTimeout(connectQuizWebSocket, 1000);
+    console.log("WebSocket connection closed");
+    setQuizStore({
+      isConnected: false,
+      connectionError: true,
+      errorMessage:
+        "Connection to server lost. Please refresh the page to reconnect.",
+    });
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket connection error:", error);
+    setQuizStore({
+      isConnected: false,
+      connectionError: true,
+      errorMessage:
+        "Failed to connect to server. Please refresh the page to try again.",
+    });
   };
 }
 
