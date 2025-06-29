@@ -122,9 +122,10 @@ func getIPFromAddr(remoteAddr string) string {
 		}
 		return ""
 	}
-	
+
+	log.Print("Remote address:", remoteAddr)
 	log.Print("IP:", ip)
-	
+
 	return ip
 }
 
