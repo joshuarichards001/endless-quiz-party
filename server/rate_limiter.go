@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-	"net"
 	"os"
 	"sync"
 	"time"
@@ -33,14 +31,9 @@ func NewRateLimiter() *RateLimiter {
 	}
 }
 
-func (rl *RateLimiter) AllowConnection(remoteAddr string) bool {
+func (rl *RateLimiter) AllowConnection(ip string) bool {
 	if isDevelopmentMode() {
 		return true
-	}
-
-	ip := getIPFromAddr(remoteAddr)
-	if ip == "" {
-		return false
 	}
 
 	rl.mu.RLock()
@@ -49,24 +42,14 @@ func (rl *RateLimiter) AllowConnection(remoteAddr string) bool {
 	return rl.connections[ip] < rl.maxConnectionsPerIP
 }
 
-func (rl *RateLimiter) AddConnection(remoteAddr string) {
-	ip := getIPFromAddr(remoteAddr)
-	if ip == "" {
-		return
-	}
-
+func (rl *RateLimiter) AddConnection(ip string) {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
 	rl.connections[ip]++
 }
 
-func (rl *RateLimiter) RemoveConnection(remoteAddr string) {
-	ip := getIPFromAddr(remoteAddr)
-	if ip == "" {
-		return
-	}
-
+func (rl *RateLimiter) RemoveConnection(ip string) {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
@@ -78,20 +61,15 @@ func (rl *RateLimiter) RemoveConnection(remoteAddr string) {
 	}
 }
 
-func (rl *RateLimiter) AllowMessage(remoteAddr string) bool {
+func (rl *RateLimiter) AllowMessage(ip string) bool {
 	if isDevelopmentMode() {
 		return true
 	}
 
-	ip := getIPFromAddr(remoteAddr)
-	if ip == "" {
-		return false
-	}
-
-	now := time.Now()
-
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
+
+	now := time.Now()
 
 	window := rl.messages[ip]
 
@@ -112,21 +90,6 @@ func (rl *RateLimiter) AllowMessage(remoteAddr string) bool {
 	// Allow message
 	window.count++
 	return true
-}
-
-func getIPFromAddr(remoteAddr string) string {
-	ip, _, err := net.SplitHostPort(remoteAddr)
-	if err != nil {
-		if net.ParseIP(remoteAddr) != nil {
-			return remoteAddr
-		}
-		return ""
-	}
-
-	log.Print("Remote address:", remoteAddr)
-	log.Print("IP:", ip)
-
-	return ip
 }
 
 func isDevelopmentMode() bool {

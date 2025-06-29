@@ -22,10 +22,10 @@ type Client struct {
 	Name          string
 	CurrentAnswer int
 	Streak        int
-	RemoteAddr    string
+	IP            string
 }
 
-func NewClient(hub *Hub, conn *websocket.Conn, name string, remoteAddr string) *Client {
+func NewClient(hub *Hub, conn *websocket.Conn, name string, ip string) *Client {
 	return &Client{
 		Hub:           hub,
 		Conn:          conn,
@@ -33,13 +33,13 @@ func NewClient(hub *Hub, conn *websocket.Conn, name string, remoteAddr string) *
 		Name:          name,
 		CurrentAnswer: -1,
 		Streak:        0,
-		RemoteAddr:    remoteAddr,
+		IP:            ip,
 	}
 }
 
 func (c *Client) ReadPump() {
 	defer func() {
-		rateLimiter.RemoveConnection(c.RemoteAddr)
+		rateLimiter.RemoveConnection(c.IP)
 		c.Hub.Unregister <- c
 		c.Conn.Close()
 	}()
@@ -59,8 +59,8 @@ func (c *Client) ReadPump() {
 			break
 		}
 
-		if !rateLimiter.AllowMessage(c.RemoteAddr) {
-			log.Printf("Client - Message rate limited from %s", c.RemoteAddr)
+		if !rateLimiter.AllowMessage(c.IP) {
+			log.Printf("Client - Message rate limited from %s", c.IP)
 			continue
 		}
 

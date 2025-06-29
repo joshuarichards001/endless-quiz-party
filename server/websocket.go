@@ -23,9 +23,11 @@ var upgrader = websocket.Upgrader{
 }
 
 func websocketHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
-	if !rateLimiter.AllowConnection(r.RemoteAddr) {
+	ip := getIPFromRequest(r)
+
+	if !rateLimiter.AllowConnection(ip) {
 		http.Error(w, "Too many connections from this IP", http.StatusTooManyRequests)
-		log.Printf("Websocket - Connection rejected due to rate limiting: %s", r.RemoteAddr)
+		log.Printf("Websocket - Connection rejected due to rate limiting: %s", ip)
 		return
 	}
 
@@ -35,14 +37,13 @@ func websocketHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rateLimiter.AddConnection(r.RemoteAddr)
-
+	rateLimiter.AddConnection(ip)
 	username := GenerateRandomUsername()
-	client := NewClient(hub, conn, username, r.RemoteAddr)
+	client := NewClient(hub, conn, username, ip)
 	hub.Register <- client
 
 	go client.ReadPump()
 	go client.WritePump()
 
-	log.Printf("Websocket - New client connected: %s", client.Name)
+	log.Printf("Websocket - New client connected: %s from IP: %s", username, ip)
 }
