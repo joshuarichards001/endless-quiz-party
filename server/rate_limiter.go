@@ -24,8 +24,8 @@ func NewRateLimiter() *RateLimiter {
 		messageTimings:      make(map[string][]time.Time),
 		lastCleanup:         time.Now(),
 		maxConnectionsPerIP: 5,
-		maxMessagesPerMin:   30,
-		cleanupInterval:     5 * time.Minute,
+		maxMessagesPerMin:   32,
+		cleanupInterval:     time.Minute,
 	}
 }
 
@@ -39,10 +39,10 @@ func (rl *RateLimiter) AllowConnection(remoteAddr string) bool {
 		return false
 	}
 
-	rl.mu.RLock()
-	connectionCount := rl.connections[ip]
-	rl.mu.RUnlock()
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
 
+	connectionCount := rl.connections[ip]
 	return connectionCount < rl.maxConnectionsPerIP
 }
 
@@ -53,8 +53,9 @@ func (rl *RateLimiter) AddConnection(remoteAddr string) {
 	}
 
 	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
 	rl.connections[ip]++
-	rl.mu.Unlock()
 }
 
 func (rl *RateLimiter) RemoveConnection(remoteAddr string) {
@@ -64,13 +65,14 @@ func (rl *RateLimiter) RemoveConnection(remoteAddr string) {
 	}
 
 	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
 	if rl.connections[ip] > 0 {
 		rl.connections[ip]--
 	}
 	if rl.connections[ip] == 0 {
 		delete(rl.connections, ip)
 	}
-	rl.mu.Unlock()
 }
 
 func (rl *RateLimiter) AllowMessage(remoteAddr string) bool {
@@ -110,7 +112,7 @@ func (rl *RateLimiter) AllowMessage(remoteAddr string) bool {
 
 	// Periodic cleanup
 	if now.Sub(rl.lastCleanup) > rl.cleanupInterval {
-		rl.cleanup(now)
+		go rl.cleanup(now)
 		rl.lastCleanup = now
 	}
 
