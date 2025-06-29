@@ -22,7 +22,7 @@ func getIPFromRequest(r *http.Request) string {
 	}
 
 	if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
-		log.Println("Utils - IP extracted from X-Forwarded-For header:", ip)
+		log.Println("Utils - IP extracted from X-Forwarded-For header:", strings.Split(ip, ",")[0])
 		return strings.Split(ip, ",")[0]
 	}
 
