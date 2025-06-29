@@ -7,25 +7,28 @@ import (
 	"time"
 )
 
+type messageWindow struct {
+	count       int
+	windowStart time.Time
+}
+
 type RateLimiter struct {
-	mu             sync.RWMutex
-	connections    map[string]int
-	messageTimings map[string][]time.Time
-	lastCleanup    time.Time
+	mu          sync.RWMutex
+	connections map[string]int
+	messages    map[string]*messageWindow
 
 	maxConnectionsPerIP int
 	maxMessagesPerMin   int
-	cleanupInterval     time.Duration
+	windowDuration      time.Duration
 }
 
 func NewRateLimiter() *RateLimiter {
 	return &RateLimiter{
 		connections:         make(map[string]int),
-		messageTimings:      make(map[string][]time.Time),
-		lastCleanup:         time.Now(),
+		messages:            make(map[string]*messageWindow),
 		maxConnectionsPerIP: 5,
 		maxMessagesPerMin:   32,
-		cleanupInterval:     time.Minute,
+		windowDuration:      time.Minute,
 	}
 }
 
@@ -39,11 +42,10 @@ func (rl *RateLimiter) AllowConnection(remoteAddr string) bool {
 		return false
 	}
 
-	rl.mu.Lock()
-	defer rl.mu.Unlock()
+	rl.mu.RLock()
+	defer rl.mu.RUnlock()
 
-	connectionCount := rl.connections[ip]
-	return connectionCount < rl.maxConnectionsPerIP
+	return rl.connections[ip] < rl.maxConnectionsPerIP
 }
 
 func (rl *RateLimiter) AddConnection(remoteAddr string) {
@@ -69,9 +71,9 @@ func (rl *RateLimiter) RemoveConnection(remoteAddr string) {
 
 	if rl.connections[ip] > 0 {
 		rl.connections[ip]--
-	}
-	if rl.connections[ip] == 0 {
-		delete(rl.connections, ip)
+		if rl.connections[ip] == 0 {
+			delete(rl.connections, ip)
+		}
 	}
 }
 
@@ -86,56 +88,29 @@ func (rl *RateLimiter) AllowMessage(remoteAddr string) bool {
 	}
 
 	now := time.Now()
-	oneMinuteAgo := now.Add(-time.Minute)
 
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
-	// Clean up old message timings
-	timings := rl.messageTimings[ip]
-	validTimings := make([]time.Time, 0, len(timings))
-	for _, timing := range timings {
-		if timing.After(oneMinuteAgo) {
-			validTimings = append(validTimings, timing)
+	window := rl.messages[ip]
+
+	// Reset window if expired or doesn't exist
+	if window == nil || now.Sub(window.windowStart) >= rl.windowDuration {
+		rl.messages[ip] = &messageWindow{
+			count:       1,
+			windowStart: now,
 		}
+		return true
 	}
 
-	// Check if under limit
-	if len(validTimings) >= rl.maxMessagesPerMin {
-		rl.messageTimings[ip] = validTimings
+	// Check if over limit
+	if window.count >= rl.maxMessagesPerMin {
 		return false
 	}
 
-	// Add current message timing
-	validTimings = append(validTimings, now)
-	rl.messageTimings[ip] = validTimings
-
-	// Periodic cleanup
-	if now.Sub(rl.lastCleanup) > rl.cleanupInterval {
-		go rl.cleanup(now)
-		rl.lastCleanup = now
-	}
-
+	// Allow message
+	window.count++
 	return true
-}
-
-func (rl *RateLimiter) cleanup(now time.Time) {
-	oneMinuteAgo := now.Add(-time.Minute)
-
-	for ip, timings := range rl.messageTimings {
-		validTimings := make([]time.Time, 0, len(timings))
-		for _, timing := range timings {
-			if timing.After(oneMinuteAgo) {
-				validTimings = append(validTimings, timing)
-			}
-		}
-
-		if len(validTimings) == 0 {
-			delete(rl.messageTimings, ip)
-		} else {
-			rl.messageTimings[ip] = validTimings
-		}
-	}
 }
 
 func getIPFromAddr(remoteAddr string) string {
