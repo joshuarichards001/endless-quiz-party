@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net"
 	"os"
 	"sync"
@@ -121,6 +122,9 @@ func getIPFromAddr(remoteAddr string) string {
 		}
 		return ""
 	}
+	
+	log.Print("IP:", ip)
+	
 	return ip
 }
 
